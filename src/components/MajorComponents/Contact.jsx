@@ -45,7 +45,7 @@ function Contact() {
 
   return (
     <>
-      <Container className="px-4 py-5 pb-1 text-center mt-5" id="contact">
+      <Container className="px-4  pb-1 text-center  contact-cont" id="contact">
         <h3 className="display-5 fw-bold">Contact Me</h3>
         <Container className="col-lg-10 mx-auto" style={{ maxWidth: "600px" }}>
           <Form onSubmit={formik.handleSubmit}>

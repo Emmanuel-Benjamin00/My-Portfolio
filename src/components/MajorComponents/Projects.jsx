@@ -12,7 +12,7 @@ import DiceGameImg from "../../assets/ProjectsImages/DiceGame.png";
 function Portfolio() {
   return (
     <>
-      <Container className="px-4 pt-5 mt-5 text-center" id="projects">
+      <Container className="px-4 text-center projects-cont" id="projects">
         <h3 className="display-5 fw-bold">My Projects</h3>
         <Container>
           <Row className="row-cols-1 row-cols-md-3 cards-container g-3">
