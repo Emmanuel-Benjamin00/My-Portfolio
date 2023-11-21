@@ -8,10 +8,12 @@ import * as Yup from "yup";
 import { toast } from 'react-toastify'
 
 function Contact() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const validationSchema = Yup.object().shape({
     name: Yup.string().required("Name is required"),
     email: Yup.string().email("Invalid email").required("Email is required"),
-    mobile: Yup.number().required("Phone Number is required"),
+    mobile: Yup.number(),
     message: Yup.string().required("Message is required"),
   });
 
@@ -25,6 +27,7 @@ function Contact() {
     validationSchema: validationSchema,
     onSubmit: async (values, { resetForm }) => {
       try {
+        setIsSubmitting(true);
         let res = await AxiosService.post("/user", values);
         if (res.status === 201) {
           console.log("Mail sent and data fetched");
@@ -34,6 +37,8 @@ function Contact() {
       } catch (error) {
         toast.error("Internal Server Error")
         console.log(error)
+      }finally {
+        setIsSubmitting(false);
       }
     },
   });
@@ -105,8 +110,8 @@ function Contact() {
               )}
             </Form.Group>
             <div id="submitGift" className="gift"></div>
-            <Button variant="primary" type="submit" className="card-button">
-              Submit
+            <Button variant="primary" type="submit" className="card-button"  disabled={isSubmitting} >
+            {isSubmitting ? 'Submitting...' : 'Submit'}
             </Button>{" "}
           </Form>
         </Container>
