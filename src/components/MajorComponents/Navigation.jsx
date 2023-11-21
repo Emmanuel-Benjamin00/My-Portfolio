@@ -45,7 +45,7 @@ function Navigation() {
                 <Nav.Link href="#contact" className="menuListItems">
                   Contact Me
                 </Nav.Link>
-                <Nav.Link href="#" target="_blank">
+                <Nav.Link href="https://github.com/Emmanuel-Benjamin00/portfolio-frontend" target="_blank">
                   <Button className="github-btn">
                     <img src={gitimg} className="pe-3" />
                     <img src={starimg} />
