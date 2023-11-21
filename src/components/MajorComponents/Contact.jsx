@@ -32,7 +32,7 @@ function Contact() {
           document.getElementById('submitGift').innerHTML="Message sent Successfully to Emmanuel. Check your mail for confirmation"
         }
       } catch (error) {
-        toast.error("Invalid email")
+        toast.error("Internal Server Error")
         console.log(error)
       }
     },
@@ -104,7 +104,7 @@ function Contact() {
                 <div className="error">{formik.errors.message}</div>
               )}
             </Form.Group>
-            <div id="submitGift" className="gift">a</div>
+            <div id="submitGift" className="gift"></div>
             <Button variant="primary" type="submit" className="card-button">
               Submit
             </Button>{" "}
