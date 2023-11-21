@@ -2,9 +2,22 @@
     background-color: var(--secondary-color);
     border: none;
     opacity: 0.9;
+    margin: 0 !important;
 }
 
 .text-field{
     height: 130px !important;
     overflow-y: scroll;
+}
+
+.error{
+    font-size: 0.6rem;
+    margin: 0 !important;
+    padding: 0 !important;
+    text-align: left;
+}
+
+.gift{
+    font-size: 0.9em;
+    color: greenyellow;
 }

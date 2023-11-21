@@ -19,6 +19,10 @@
   font-family: var(--major-font);
 }
 
+/* .custom-toast {
+  color: yellow !important; 
+} */
+
 body {
   background: linear-gradient(to top, black, var(--bg-color)); 
 }
