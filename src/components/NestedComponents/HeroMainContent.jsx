@@ -20,23 +20,27 @@ function HeroMainContent() {
   const [loader, setLoader] = useState(false);
 
   const downloadPDF = () => {
-    const capture = document.querySelector("#root2")
+    const capture = document.querySelector("#root2");
     setLoader(true);
+    const contentHeight = capture.scrollHeight;
+    const contentWidth = capture.scrollWidth;
+    const pdfWidth = contentWidth;
+    const pdfHeight = contentHeight;
     const backgroundColor = "#13011ae6";
     html2canvas(capture, { backgroundColor }).then((canvas) => {
-      const imgData = canvas.toDataURL("img/png")
-      const pdfWidth = 841 ;
-      const pdfHeight = 1189 ; 
-      const doc = new jsPDF("p", "mm",[pdfWidth, pdfHeight]);
+      const imgData = canvas.toDataURL("image/png");
+      const doc = new jsPDF("p", "mm", [pdfWidth, pdfHeight]);
       const componentWidth = doc.internal.pageSize.getWidth();
       const componentHeight = doc.internal.pageSize.getHeight();
+
       doc.setFillColor(backgroundColor);
-      doc.rect(0, 0, componentWidth, 5*componentHeight, "F");
+      doc.rect(0, 0, componentWidth, componentHeight, "F");
       doc.addImage(imgData, "PNG", 0, 0, componentWidth, componentHeight);
-      setLoader(false)
-      doc.save("Emmanuel Benjamin Portfolio.pdf")
-    })
-  }
+
+      setLoader(false);
+      doc.save("Emmanuel Benjamin Portfolio.pdf");
+    });
+  };
 
   const emailAddress = 'emmanuel26112000@gmail.com';
   const subject = 'Mail received from Portfolio link';

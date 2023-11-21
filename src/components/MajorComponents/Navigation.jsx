@@ -8,8 +8,14 @@ import Logo from "../NestedComponents/Logo";
 import { Button } from "react-bootstrap";
 import gitimg from "../../assets/NavImages/gitbranch.svg";
 import starimg from "../../assets/NavImages/star.svg";
+import { useState } from "react";
 
 function Navigation() {
+  const [showOffcanvas, setShowOffcanvas] = useState(false);
+
+  const handleCloseOffcanvas = () => {
+    setShowOffcanvas(false);
+  };
 
   return (
     <>
@@ -18,8 +24,8 @@ function Navigation() {
           <Navbar.Brand href="#home">
             <Logo />
           </Navbar.Brand>
-          <Navbar.Toggle aria-controls="navbarNav" className="aria-control" />
-          <Navbar.Offcanvas id="offcanvasNavbar" placement="top" className="offCanvas">
+          <Navbar.Toggle aria-controls="navbarNav" className="aria-control"  onClick={() => setShowOffcanvas(!showOffcanvas)}/>
+          <Navbar.Offcanvas id="offcanvasNavbar" placement="top" className="offCanvas" show={showOffcanvas}   onHide={handleCloseOffcanvas}>
             <Offcanvas.Header closeButton>
               <Offcanvas.Title id="offcanvasNavbarLabel">
                 <Logo />
@@ -27,26 +33,26 @@ function Navigation() {
             </Offcanvas.Header>
             <Offcanvas.Body>
               <Nav className="justify-content-end align-items-center flex-grow-1 pe-3 fs-6 flex-wrap row-gap-1 nav-styling">
-                <Nav.Link href="#home" className="menuListItems">
+                <Nav.Link href="#home" className="menuListItems"  onTouchEnd={(e) => { e.preventDefault(); window.location.href="#home";  handleCloseOffcanvas();}}>
                   Home
                 </Nav.Link>
-                <Nav.Link href="#about" className="menuListItems">
+                <Nav.Link href="#about" className="menuListItems"  onTouchEnd={(e) => { e.preventDefault(); window.location.href="#about";  handleCloseOffcanvas();}}>
                   About
                 </Nav.Link>
-                <Nav.Link href="#skills" className="menuListItems"  onClick={() => window.location.href="#skills"}>
+                <Nav.Link href="#skills" className="menuListItems"  onTouchEnd={(e) => { e.preventDefault(); window.location.href="#skills";  handleCloseOffcanvas(); }}>
                  Skills
                 </Nav.Link>
-                <Nav.Link href="#education" className="menuListItems">
+                <Nav.Link href="#education" className="menuListItems"  onTouchEnd={(e) => { e.preventDefault(); window.location.href="#education";  handleCloseOffcanvas();}}>
                 Education
                 </Nav.Link>
-                <Nav.Link href="#projects" className="menuListItems">
+                <Nav.Link href="#projects" className="menuListItems"  onTouchEnd={(e) => { e.preventDefault(); window.location.href="#projects"; handleCloseOffcanvas(); }}>
                   Projects
                 </Nav.Link>
-                <Nav.Link href="#contact" className="menuListItems">
+                <Nav.Link href="#contact" className="menuListItems"  onTouchEnd={(e) => { e.preventDefault(); window.location.href="#contact";  handleCloseOffcanvas();}}>
                   Contact Me
                 </Nav.Link>
-                <Nav.Link href="https://github.com/Emmanuel-Benjamin00/portfolio-frontend" target="_blank">
-                  <Button className="github-btn">
+                <Nav.Link href="https://github.com/Emmanuel-Benjamin00/portfolio-frontend" target="_blank" >
+                  <Button className="github-btn" onClick={()=> handleCloseOffcanvas()}>
                     <img src={gitimg} className="pe-3" />
                     <img src={starimg} />
                   </Button>
