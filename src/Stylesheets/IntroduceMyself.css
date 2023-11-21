@@ -1,0 +1,62 @@
+
+.intro-section{
+    height: 36em;
+}
+
+.intropara{
+    text-align:justify;
+    font-size: 1.2rem;
+}
+
+.interests{
+    color: var(--major-color);
+    font-weight: bold;
+}
+
+.row-container-intro{
+    padding: 3em 0;
+    position: relative;
+    top: 4em;
+}
+
+
+
+@media screen and (max-width: 1199px) {
+  
+}
+
+
+@media screen and (max-width: 991px) {
+    .intro-main-content{
+        position: absolute;
+        top: 12em
+    }
+
+}
+
+@media screen and (max-width: 767px) {
+    .intro-main-content{
+        position: absolute;
+        top: 3em
+    }
+
+    .let-me-intro{
+        font-size: 2.3rem !important;
+    }
+
+    .intropara{
+        font-size: 1rem;
+    }
+
+}
+
+@media screen and (max-width: 350px) {
+    .intro-main-content{
+        position: absolute;
+        top: 14em
+    }
+
+    .let-me-intro{
+        text-align: center;
+    }
+}

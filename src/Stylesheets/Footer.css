@@ -1,0 +1,12 @@
+.footer-block{
+    background-color:rgba(129, 12, 168,0.4);;
+    
+}
+
+.footer-block *{
+    color: var(--customized-color) !important;
+}
+
+.social-background-circles-footer{
+    margin-left: 0.6em;
+}

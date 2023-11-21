@@ -1,0 +1,151 @@
+.hero-section {
+    height:36em;
+    padding-top: 2em;
+   
+}
+
+.row-container-hero{
+    padding: 7.6% 0 0 0 ;
+    position: relative;
+}
+
+.hi{
+    color: var(--customized-color);
+    font-family: var(--secondary-font);
+}
+
+.im {
+    color: var(--customized-color);
+    font-family: var(--secondary-font);
+    font-weight: 500;
+}
+
+.name {
+    color: var(--major-color);
+}
+
+.content {   
+    letter-spacing: 2px;
+}
+
+.button-design  {
+    background-color: var(--secondary-color) !important;
+    padding: 10px 15px !important;
+    border-radius: 8px !important;
+    border: none !important;
+    color: var(--bg-color) !important;
+    font-weight: 700 !important;
+}
+
+.button-design *{
+    color: var(--bg-color) !important;
+}
+
+.social-background-circles{
+    background-color: rgb(78, 26, 167);
+    width: fit-content;
+    padding: 0.9em;
+    border-radius: 50%;
+}
+
+
+.social-icons{
+    gap:1.5%;
+}
+
+.image{
+    object-fit: cover;
+    width: 98.5%;
+}
+
+
+
+@media screen and (max-width: 1199px) {
+  
+}
+
+
+@media screen and (max-width: 991px) {
+       
+    .hero-section {
+        height:35em;
+        margin-top: 6em;
+    }
+
+    .hero-main-content{
+        position: absolute;
+        top: 55%;
+    }
+
+    .image{
+        opacity: 0.18;
+    }
+
+    .social-background-circles{
+        background-color: rgb(78, 26, 167);
+        width: fit-content;
+        padding: 0.6em;
+        border-radius: 50%;
+    }
+    
+    
+    .social-icons{
+        gap:1.5%;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .hero-section {
+        height:35em;
+        margin-top: 6.5em;
+    }
+
+    .hero-main-content{
+        position: absolute;
+        top: 55%;
+    }
+
+    .image{
+        opacity: 0.18;
+    }
+
+    .social-background-circles{
+        background-color: rgb(78, 26, 167);
+        width: fit-content;
+        padding: 0.6em;
+        border-radius: 50%;
+    }
+    
+    
+    .social-icons{
+        gap:1.5%;
+    }
+}
+
+@media screen and (max-width: 350px) {
+    .hero-section {
+        height:20em;
+        margin-top: 7em;
+    }
+
+    .hero-main-content{
+        position: absolute;
+        top: 55%;
+    }
+
+    .image{
+        opacity: 0.18;
+    }
+
+    .social-background-circles{
+        background-color: rgb(78, 26, 167);
+        width: fit-content;
+        padding: 0.6em;
+        border-radius: 50%;
+    }
+    
+    
+    .social-icons{
+        gap:1.5%;
+    }
+}

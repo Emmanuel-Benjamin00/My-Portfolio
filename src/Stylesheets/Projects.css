@@ -1,0 +1,39 @@
+.projects-card{
+    background: none !important;
+    max-width: 19em;
+    border: 2px solid var(--primary-color) !important;
+    border-radius: 20px !important;
+    padding: 10px;    
+}
+
+
+.cards-container{
+    margin: 0px 1em !important;
+}
+
+.card-text{
+    text-align: justify;
+    height: 9em;
+}
+
+.image-in-card{
+    padding: 6px;
+    border-radius: 20px !important;
+    opacity: 0.8;
+    height: 10.5rem;
+}
+
+.title-card{
+    color: white !important;
+    min-height: 2.7em !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 !important;
+}
+
+.card-button{
+    background-color: var(--primary-color) !important;
+    border: none !important;
+    margin-top: 3em !important;
+}

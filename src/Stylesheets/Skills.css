@@ -1,0 +1,159 @@
+.skills-section {
+    height: 33em;
+    margin-top: 2em;
+    padding-left: auto;
+    padding-right: auto;
+}
+
+.whatIDo {
+    font-weight: bold !important;
+}
+
+.skill-para {
+    font-size: 1.5rem;
+    font-weight: 200;
+}
+
+.skill-img {
+    width: 3.2rem;
+    fill: var(--secondary-color);
+}
+
+.img-container-skills {
+    padding: 10px 25px;
+}
+
+.skill-image {
+    width: 90%;
+    height: 100%;
+}
+
+
+.row-container-skill {
+    position: relative;
+}
+
+.lightning-lines {
+    margin-top: 1em;
+}
+
+.skill-chart-cont {
+    width: 100vw;
+    margin: 0 auto;
+    padding-top: 5em;
+    position: relative;
+    margin-top: 3em;
+}
+
+.chart {
+    width: 55em !important;
+    height: 25em !important;
+    margin: 0 auto;
+}
+
+
+@media screen and (max-width: 1199px) {}
+
+
+@media screen and (max-width: 991px) {
+    .skills-section {
+        margin-top: 5em;
+    }
+
+    .skill-image {
+        opacity: 0.18;
+    }
+
+    .skills-main-content {
+        position: absolute;
+        top: 15em;
+    }
+
+
+    .lightning-lines * {
+        font-size: 0.8em !important;
+    }
+
+    .skills-chart-section {
+        margin-top: 15em;
+    }
+
+    .chart {
+        width: 85% !important;
+        height: 95% !important;
+        margin: 0 auto;
+    }
+
+    .skills-chart-section{
+        padding: 0 !important;
+    }
+
+}
+
+@media screen and (max-width: 767px) {
+
+    .skills-section {
+        margin-top: 8em;
+    }
+
+    .skill-image {
+        opacity: 0.18;
+    }
+
+    .skills-main-content {
+        position: absolute;
+        top: 2em;
+    }
+
+    .whatIDo {
+        font-size: 2.7rem !important;
+        font-weight: bold !important;
+    }
+
+    .skill-para {
+        font-size: 1.2rem;
+        font-weight: 200;
+    }
+
+    .skills-chart-section {
+        margin-top: 19em;
+        padding: 0 !important;
+    }
+
+    .chart {
+        width: 22em !important;
+        height: 25em !important;
+        margin: 0 auto;
+    }
+
+   
+}
+
+@media screen and (max-width: 350px) {
+    .skills-section {
+        margin-top: 25em;
+    }
+
+    .skill-image {
+        opacity: 0.18;
+    }
+
+    .skills-main-content {
+        position: absolute;
+        top: 2em;
+    }
+
+    .skills-chart-section {
+        margin-top: 25em;
+    }
+
+    .chart {
+        width: 22em !important;
+        height: 25em !important;
+        margin: 0 auto;
+    }
+
+    .skills-chart-section{
+        padding: 0 !important;
+    }
+}

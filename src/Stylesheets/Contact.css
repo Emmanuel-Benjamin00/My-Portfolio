@@ -1,0 +1,10 @@
+.form-input{
+    background-color: var(--secondary-color);
+    border: none;
+    opacity: 0.9;
+}
+
+.text-field{
+    height: 130px !important;
+    overflow-y: scroll;
+}

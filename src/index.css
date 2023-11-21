@@ -1,0 +1,56 @@
+:root {
+  --bg-color: rgb(19, 1, 26);
+  --nav-bg-color:rgba(19, 1, 26,0.9);
+  --major-color: rgb(193, 71, 233);
+  --primary-color: rgb(129, 12, 168);
+  --secondary-color: rgb(229, 184, 244);
+  --customized-color:white;
+ 
+
+  --logo-font:'Mr Dafoe', cursive;
+  --logo-secondary-font:'Condiment', cursive;
+  --major-font: 'Open Sans', sans-serif;
+  --secondary-font: 'Roboto', sans-serif;
+  --third-font: 'Montserrat', sans-serif;
+}
+
+*{
+  color: var(--customized-color);
+  font-family: var(--major-font);
+}
+
+body {
+  background: linear-gradient(to top, black, var(--bg-color)); 
+}
+
+.overlay{
+  position: relative;
+}
+
+.overlay::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0px;
+  min-width: 100%;
+  min-height: 100vh;
+  background: url('./assets/bgImages/home-bg.jpg') ; 
+  background-repeat:no-repeat;
+  opacity: 0.1;
+  z-index: -2;
+}
+
+.overlay::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0px;
+  min-width: 100%;
+  min-height: 100%;
+  background: url('./assets/bgImages/bgstars.png') ; 
+  z-index: -1;
+}
+
+
+
+

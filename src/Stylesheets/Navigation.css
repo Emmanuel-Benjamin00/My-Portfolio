@@ -1,0 +1,94 @@
+.navbar-css {
+    height: 4em;
+    background-color: var(--nav-bg-color);
+    width: 100vw;
+    margin-left: auto;
+    margin-right: auto;
+    position: fixed !important;
+    top:0;
+    z-index: 3;
+}
+
+
+.logoName {
+    font-family: var(--logo-font);
+    color: var(--major-color);
+}
+
+.bracs {
+    font-weight: bold;
+    font-size: 1.7rem;
+    font-family: var(--logo-secondary-font);
+    color: var(--secondary-color);
+}
+
+.menuListItems {
+    color: var(--customized-color) !important;
+    font-family: var(--secondary-font);
+    font-size: 1.1em !important;
+    font-weight: 500 !important;
+}
+
+.menuListItems:hover {
+    color: var(--major-color) !important;
+    border-bottom: 3px solid var(--major-color);
+}
+
+
+.github-btn {
+    background-color: var(--primary-color) !important;
+    border: none !important;
+}
+
+.nav-styling{
+    gap: 15px !important;
+}
+
+.aria-control{
+    background-color: var(--secondary-color)!important;
+}
+
+.offCanvas{
+    background-color: var(--primary-color) !important;
+}
+
+
+@media screen and (max-width: 1199px) {
+    .menuListItems {
+        font-size: 0.9em !important;
+    }
+}
+
+
+@media screen and (max-width: 991px) {
+    .menuListItems {
+        font-size: 0.5em !important;
+    }
+
+    .nav-styling{
+        gap: 0.5px !important;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .menuListItems {
+        font-size: 1em !important;
+    }
+
+    .nav-styling{
+        gap: 0.5px !important;
+    }
+    .github-btn {
+        background-color: black !important;
+        border: none !important;
+    }
+}
+
+@media screen and (max-width: 350px) {
+    .logoName {
+        font-size: 4px !important;
+    }
+    .bracs{
+         font-size: 10px !important;
+    }
+}
