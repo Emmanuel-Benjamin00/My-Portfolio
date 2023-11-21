@@ -58,7 +58,7 @@ function Footer() {
           </div>
 
           <div className="d-flex justify-content-center py-3 border-top ">
-            <p>Designed With &nbsp; <span> <img src={heart} alt="" /> </span> &nbsp;By Emmanuel Benjamin</p>
+            <p>Designed With &nbsp; <span> <img src={heart} alt="heart" /> </span> &nbsp;By Emmanuel Benjamin</p>
           </div>
         </footer>
       </div>

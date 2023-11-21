@@ -12,7 +12,7 @@ function HorizontalCard(props) {
             <Card.Img
               src={props.logo}
               className="img-fluid rounded-start card-image ms-4"
-              alt="..."
+              alt="logo"
             />
           </Col>
           <Col md={10} sm={12}>

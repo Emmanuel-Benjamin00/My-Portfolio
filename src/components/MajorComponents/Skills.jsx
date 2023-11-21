@@ -28,7 +28,7 @@ function Skills() {
               <img
                 src={Boywithlap}
                 className="d-block mx-auto text-center skill-image"
-                alt="Bootstrap Themes"
+                alt="Boy with Lap"
                 loading="lazy"
               />
             </Col>
@@ -39,20 +39,20 @@ function Skills() {
                 STACK
               </p>
               <div className="d-flex flex-row img-container-skills flex-wrap gap-4 justify-content-center">
-                <img src={html5} alt="" className="skill-img" />
-                <img src={css} alt="" className="skill-img" />
-                <img src={js} alt="" className="skill-img" />
-                <img src={reactimg} alt="" className="skill-img" />
-                <img src={nodejs} alt="" className="skill-img" />
-                <img src={db} alt="" className="skill-img" />
-                <img src={aws} alt="" className="skill-img" />
-                <img src={bootstrap} alt="" className="skill-img" />
-                <img src={git} alt="" className="skill-img" />
-                <img src={npm} alt="" className="skill-img" />
-                <img src={firebase} alt="" className="skill-img" />
-                <img src={ps} alt="" className="skill-img" />
-                <img src={blender} alt="" className="skill-img" />
-                <img src={github} alt="" className="skill-img" />
+                <img src={html5} alt="htmlImg" className="skill-img" />
+                <img src={css} alt="cssImg" className="skill-img" />
+                <img src={js} alt="jsImg" className="skill-img" />
+                <img src={reactimg} alt="reactImg" className="skill-img" />
+                <img src={nodejs} alt="nodejsImg" className="skill-img" />
+                <img src={db} alt="dbImg" className="skill-img" />
+                <img src={aws} alt="awsImg" className="skill-img" />
+                <img src={bootstrap} alt="bootstrapImg" className="skill-img" />
+                <img src={git} alt="gitImg" className="skill-img" />
+                <img src={npm} alt="npmImg" className="skill-img" />
+                <img src={firebase} alt="firebaseImg" className="skill-img" />
+                <img src={ps} alt="psImg" className="skill-img" />
+                <img src={blender} alt="blenderImg" className="skill-img" />
+                <img src={github} alt="githubImg" className="skill-img" />
               </div>
               <p className="lightning-lines">
                 ⚡ Develop highly interactive Front end / User Interfaces for

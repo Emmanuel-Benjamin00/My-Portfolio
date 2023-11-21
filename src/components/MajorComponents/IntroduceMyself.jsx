@@ -13,7 +13,7 @@ function Intro() {
               <img
                 src={introImg}
                 className="d-block mx-auto text-center image"
-                alt="Bootstrap Themes"
+                alt="Intro Img"
                 loading="lazy"
               />
             </Col>
