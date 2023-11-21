@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Col, Container, Row } from "react-bootstrap";
+import { Container, Row } from "react-bootstrap";
 import ProjectsCard from "../NestedComponents/ProjectsCard";
 import "../../Stylesheets/Projects.css";
 import NotesAppImg from "../../assets/ProjectsImages/NotesApp.png";
@@ -8,6 +8,7 @@ import RestaurantLandingImg from "../../assets/ProjectsImages/RestaurantLanding.
 import TravelLandingImg from "../../assets/ProjectsImages/TravelLanding.png";
 import MedicoSalesImg from "../../assets/ProjectsImages/MedicoSales.png";
 import DiceGameImg from "../../assets/ProjectsImages/DiceGame.png";
+
 
 function Portfolio() {
   return (
@@ -64,6 +65,10 @@ function Portfolio() {
               code="https://github.com/Emmanuel-Benjamin00/Dice-Game"
             />
           </Row>
+        </Container>
+        <Container className="contributions-cont">
+        <h1 className="contributions p-0">Github Contributions this Year</h1><br/><span className="fs-6 p-0">Dynamic Data from github API</span>
+        <img src="https://ghchart.rshah.org/810CA8/Emmanuel-Benjamin00" alt="Github chart" className="github-chart pt-3"></img>
         </Container>
       </Container>
     </>

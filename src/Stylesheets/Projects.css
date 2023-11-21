@@ -42,3 +42,48 @@
     padding-top:4em !important;
     margin-top: 4em !important;
 }
+
+.github-chart{
+    width: 80%;
+    height: 15em;
+}
+
+.contributions-cont{
+    padding-top: 5em;
+}
+
+@media screen and (max-width: 1199px) {}
+
+
+@media screen and (max-width: 991px) {
+    .github-chart{
+        width: 90%;
+        height: 15em;
+    }
+    
+    .contributions-cont{
+        padding-top: 4em;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .github-chart{
+        width: 100%;
+        height: 8em;
+    }
+    
+    .contributions-cont{
+        padding-top: 4em;
+    }
+}
+
+@media screen and (max-width: 350px) {
+    .github-chart{
+        width: 100%;
+        height: 5em;
+    }
+    
+    .contributions-cont{
+        padding-top: 4em;
+    }
+}
