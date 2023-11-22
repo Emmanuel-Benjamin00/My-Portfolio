@@ -38,10 +38,10 @@ function Footer() {
             <div className="col-12 col-md-4 mb-3">
               <h5>Contact Info</h5>
               <ul className="nav flex-column">
-                <li className="nav-item mb-2"><a href="#" className="nav-link p-0">+91 8072482032</a></li>
-                <li className="nav-item mb-2"><a href="#" className="nav-link p-0">+91 9445482366</a></li>
-                <li className="nav-item mb-2"><a href="#" className="nav-link p-0">emmanuel26112000@gmail.com</a></li>
-                <li className="nav-item mb-2"><a href="#" className="nav-link p-0">Chennai,TN,India - 600059.</a></li>
+                <li className="nav-item mb-2">+91 8072482032</li>
+                <li className="nav-item mb-2">+91 9445482366</li>
+            <li className="nav-item mb-2">emmanuel26112000@gmail.com</li>
+                <li className="nav-item mb-2">Chennai,TN,India - 600059.</li>
                 <li className="nav-item mb-2">
                   <div className="py-3 d-flex social-icons footer-social-icons flex-wrap">
                     <Link to="https://www.linkedin.com/in/emmanuel26112000-b-b5145593/" target="_blank"><div className="social-background-circles-footer"><FontAwesomeIcon icon={faLinkedin} size="xl" /></div></Link>
