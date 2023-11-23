@@ -44,7 +44,7 @@ function Footer() {
                 <li className="nav-item mb-2">Chennai,TN,India - 600059.</li>
                 <li className="nav-item mb-2">
                   <div className="py-3 d-flex social-icons footer-social-icons flex-wrap">
-                    <Link to="https://www.linkedin.com/in/emmanuel26112000-b-b5145593/" target="_blank"><div className="social-background-circles-footer"><FontAwesomeIcon icon={faLinkedin} size="xl" /></div></Link>
+                    <Link to="https://www.linkedin.com/in/emmanuel-b-b5145593/" target="_blank"><div className="social-background-circles-footer"><FontAwesomeIcon icon={faLinkedin} size="xl" /></div></Link>
                     <Link to="https://github.com/Emmanuel-Benjamin00" target="_blank"><div className="social-background-circles-footer"><FontAwesomeIcon icon={faGithub} size="xl" /></div></Link>
                     <Link to={`mailto:${emailAddress}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`} target="_blank"><div className="social-background-circles-footer"><FontAwesomeIcon icon={faEnvelope} size="xl" /></div></Link>
                     <Link to="https://www.facebook.com/profile.php?id=100009359257866" target="_blank"><div className="social-background-circles-footer"><FontAwesomeIcon icon={faFacebook} size="xl" /></div></Link>
