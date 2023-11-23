@@ -62,7 +62,7 @@ function HeroMainContent() {
           </span>
         </div>
         <div className="py-3 d-flex social-icons flex-wrap">
-          <Link to="www.linkedin.com/in/emmanuel-b-b5145593" target="_blank"><div className="social-background-circles"><FontAwesomeIcon icon={faLinkedin} size="xl" /></div></Link>
+          <Link to="https://www.linkedin.com/in/emmanuel-b-b5145593/" target="_blank"><div className="social-background-circles"><FontAwesomeIcon icon={faLinkedin} size="xl" /></div></Link>
           <Link to="https://github.com/Emmanuel-Benjamin00" target="_blank"><div className="social-background-circles"><FontAwesomeIcon icon={faGithub} size="xl" /></div></Link>
           <Link to={`mailto:${emailAddress}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`} target="_blank"><div className="social-background-circles"><FontAwesomeIcon icon={faEnvelope} size="xl" /></div></Link>
           <Link to="https://www.facebook.com/profile.php?id=100009359257866" target="_blank"><div className="social-background-circles"><FontAwesomeIcon icon={faFacebook} size="xl" /></div></Link>
