@@ -8,7 +8,7 @@ import RestaurantLandingImg from "../../assets/ProjectsImages/RestaurantLanding.
 import TravelLandingImg from "../../assets/ProjectsImages/TravelLanding.png";
 import MedicoSalesImg from "../../assets/ProjectsImages/MedicoSales.png";
 import DiceGameImg from "../../assets/ProjectsImages/DiceGame.png";
-
+import BlogImg from "../../assets/ProjectsImages/blog.png"
 
 function Portfolio() {
   return (
@@ -17,6 +17,13 @@ function Portfolio() {
         <h3 className="display-5 fw-bold">My Projects</h3>
         <Container>
           <Row className="row-cols-1 row-cols-md-3 cards-container g-3">
+          <ProjectsCard
+              img={BlogImg}
+              title="Blog App"
+              content="It is a blog app in which a user can add blogs. It is fully secured where a user can add a blog only if the admin accepts the content the user adds."
+              view="https://bloginme.netlify.app/"
+              code="https://github.com/Emmanuel-Benjamin00/blog-app-frontend"
+            />
             <ProjectsCard
               img={NotesAppImg}
               title="Notes App"
@@ -24,14 +31,6 @@ function Portfolio() {
               adding, editing and deleting a note."
               view="https://notes-app-project-guvi.netlify.app/home"
               code="https://github.com/Emmanuel-Benjamin00/NotesApp"
-            />
-            <ProjectsCard
-              img={ForgotPasswordImg}
-              title="Forgot Password Webpage"
-              content="A fullstack webpage for forgot password. It sends a mail of a link when forgot password is clicked. 
-              The link displays another page where the password can be changed."
-              view="https://forgot-password-reset.netlify.app/"
-              code="https://github.com/Emmanuel-Benjamin00/password-reset"
             />
             <ProjectsCard
               img={RestaurantLandingImg}
