@@ -9,6 +9,7 @@ import TravelLandingImg from "../../assets/ProjectsImages/TravelLanding.png";
 import MedicoSalesImg from "../../assets/ProjectsImages/MedicoSales.png";
 import DiceGameImg from "../../assets/ProjectsImages/DiceGame.png";
 import BlogImg from "../../assets/ProjectsImages/blog.png"
+import TodoImg from "../../assets/ProjectsImages/todoImg.png"
 
 function Portfolio() {
   return (
@@ -24,13 +25,12 @@ function Portfolio() {
               view="https://bloginme.netlify.app/"
               code="https://github.com/Emmanuel-Benjamin00/blog-app-frontend"
             />
-            <ProjectsCard
-              img={NotesAppImg}
-              title="Notes App"
-              content="A web app frontend for adding notes. It has functionalities of
-              adding, editing and deleting a note."
-              view="https://notes-app-project-guvi.netlify.app/home"
-              code="https://github.com/Emmanuel-Benjamin00/NotesApp"
+               <ProjectsCard
+              img={TodoImg}
+              title="ToDo App"
+              content="A website for taking todos. We can add the works we should do and after completing it will be striked out"
+              view="https://i-am-here-to-keep-your-notes.netlify.app/"
+              code="https://github.com/Emmanuel-Benjamin00/Todo-App"
             />
             <ProjectsCard
               img={RestaurantLandingImg}
@@ -48,12 +48,13 @@ function Portfolio() {
               view="https://unique-lolly-2479b3.netlify.app/"
               code="https://github.com/Emmanuel-Benjamin00/Travel-Landing-Page"
             />
-            <ProjectsCard
-              img={MedicoSalesImg}
-              title="Medico Sales"
-              content="A frontend website of a Medical Products Sales shop Medico Sales."
-              view="https://medico-sales.netlify.app/"
-              code="https://github.com/Emmanuel-Benjamin00/MedicoSales"
+               <ProjectsCard
+              img={NotesAppImg}
+              title="Notes App"
+              content="A web app frontend for adding notes. It has functionalities of
+              adding, editing and deleting a note."
+              view="https://notes-app-project-guvi.netlify.app/home"
+              code="https://github.com/Emmanuel-Benjamin00/NotesApp"
             />
             <ProjectsCard
               img={DiceGameImg}
