@@ -79,7 +79,7 @@ function HeroMainContent() {
                 <span>Download this page as PDF</span>
               )
             }</Button>
-            <Link to={resume} target="_blank" download="Resume.pdf"> <Button className="button-design">Download Resume</Button></Link>
+            <Link to={resume} target="_blank" download="Emmanuel Benjamin Resume.pdf"> <Button className="button-design">Download Resume</Button></Link>
           </div>
         </div>
       </Col>
