@@ -27,7 +27,7 @@ function App() {
                 <Hero/>
                 <Intro />
                 <Skills />
-                <SkillChart/>
+                {/* <SkillChart/> */}
                 <Education />
                 <Portfolio />
                 <Contact />
