@@ -18,6 +18,12 @@ body {
   background: linear-gradient(to top, black, #13011a); 
 }
 
+.navbar-toggler-icon {
+  background-color: rgb(229,184,244); 
+  border-radius: 5px;
+}
+
+
 .edu-exp-app{
   background-color: white;
   padding: 15px 0;

@@ -21,7 +21,7 @@ function Navigation() {
       <Navbar collapseOnSelect expand="md" className="nav-bg" sticky="top">
         <Container fluid="md">
           <Navbar.Brand><Logo /></Navbar.Brand>
-          <Navbar.Toggle aria-controls="responsive-navbar-nav" ref={navbarRef}/>
+          <Navbar.Toggle aria-controls="responsive-navbar-nav" ref={navbarRef} />
           <Navbar.Collapse id="responsive-navbar-nav" >
             <Nav className="ms-auto">
               <Nav.Link as={Link} to="home" spy={true} smooth={true} duration={100} offset={-70} className="fw-bold" style={{ cursor: 'pointer' }} onTouchEnd={()=>collapseIt()}>Home</Nav.Link>
