@@ -3,7 +3,7 @@ import HeroImg from "../../../assets/HeroImages/HeroImg.svg";
 import { Container, Row, Col, Image } from "react-bootstrap";
 import "./Hero.css";
 import HeroMainContent from "../../NestedComponents/HeroMainContent";
-import myImage from '../../../assets/HeroImages/zoomed.png'
+import myImage from '../../../assets/HeroImages/Zoomed.png'
 
 function Hero() {
   return (
