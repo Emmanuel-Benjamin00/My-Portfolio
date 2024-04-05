@@ -1,0 +1,33 @@
+.projects-image {
+    height: 200px;
+    border-top-left-radius: 30px !important;
+    border-top-right-radius: 30px !important;
+}
+
+.link-style {
+    font-size: 0.85em;
+    letter-spacing: 0px;
+    color: #c147e9 !important;
+    text-decoration: underline #c147e9 !important;
+}
+
+.project-card {
+    border: 1px solid #bf00ff !important;
+    box-shadow: #e100ff 0px 1px 12px 2px;
+    background-color: transparent !important;
+    border-radius: 20px !important;
+}
+
+.project-para {
+    text-align: justify;
+    font-weight: 500;
+    color: rgb(97, 97, 97);
+    font-size: 1em;
+}
+
+@media screen and (max-width: 768px) {
+    .project-para {
+        font-size: 0.75em;
+    }
+}
+

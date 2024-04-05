@@ -1,31 +1,51 @@
 :root {
-  --bg-color: rgb(19, 1, 26);
-  --nav-bg-color:rgba(19, 1, 26,0.9);
-  --major-color: rgb(193, 71, 233);
-  --primary-color: rgb(129, 12, 168);
-  --secondary-color: rgb(229, 184, 244);
-  --customized-color:white;
- 
-
-  --logo-font:'Mr Dafoe', cursive;
-  --logo-secondary-font:'Condiment', cursive;
-  --major-font: 'Open Sans', sans-serif;
-  --secondary-font: 'Roboto', sans-serif;
-  --third-font: 'Montserrat', sans-serif;
+  --button-hover-color: rgb(252, 112, 112);
+  --primary-text-color:#0D2551 ;
 }
 
-*{
-  color: var(--customized-color);
-  font-family: var(--major-font);
+* {
+  font-family: "Montserrat", sans-serif;
+  font-style: normal;
+  color: white !important;
+  /* color:var(--primary-text-color) !important; */
 }
 
 body {
-  background: linear-gradient(to top, black, var(--bg-color)); 
+  /* background: linear-gradient(to top,rgb(230, 162, 162), rgb(255, 255, 255));
+  background-color: rgb(255, 245, 240) ;
+  color: #193B7B;
+  color:#132F65 ; */
+  background: linear-gradient(to top, black, #13011a); 
 }
+
+.edu-exp-app{
+  background-color: white;
+  padding: 15px 0;
+  padding-bottom: 50px;
+}
+
+.all-button{
+  /* width: 90%; */
+  background-color: transparent !important;
+  color: white !important;
+  border: 1px solid #E5B8F4 !important;
+}
+
+.all-button:hover{
+  background-color: rgb(129, 12, 168)!important;
+  color: white !important;
+}
+
+.headings{
+  font-size: 2rem;
+  font-weight: 700;
+}
+
 
 .overlay{
   position: relative;
 }
+
 
 .overlay::after {
   content: "";
@@ -52,5 +72,12 @@ body {
 }
 
 
+@media screen and (max-width: 768px) {
+  .overlay::after {
+    min-height: 90vh;
+ 
+  }
+
+}
 
 

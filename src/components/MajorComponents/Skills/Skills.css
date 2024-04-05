@@ -1,0 +1,57 @@
+
+/* 
+.skill-image-div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background-color: transparent;
+    padding: 20px;
+    height: 140px;
+    width: 140px;
+    user-select: none;
+    border: 1px solid white !important;
+    border: 1px solid #0D2551;
+}
+
+.skill-img {
+    width: 60%;
+}
+
+.skill-image-div:hover {
+    background-color: #E5B8F4;
+    cursor: pointer;
+    color: white;
+}
+
+.skills-text {
+    color: var(--primary-text-color);
+}
+
+.circlestyle{
+    background-color: var(--button-hover-color);
+} */
+
+
+.skillImg {
+    background-color: transparent !important;
+}
+
+.skill-boy{
+    width: 85% !important;
+}
+
+.skillEach-img{
+    width: 60% !important;
+    height: 70px;
+}
+
+@media screen and (max-width: 768px) {
+ .skillName{
+    font-size: 0.8em;
+ }
+
+ .lightning-lines{
+    font-size: 0.8em;
+ }
+}

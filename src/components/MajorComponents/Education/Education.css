@@ -1,0 +1,51 @@
+.vertical-line {
+    border-left: 1.5px solid #000 !important;
+    height: 85% !important;
+}
+
+.education-logo {
+    width: 50px !important;
+}
+
+.education-card {
+    border: none !important;
+}
+
+.card-body-education {
+    padding: 0 !important;
+}
+
+.circle {
+    height: 15px;
+    width: 15px;
+    background-color: red !important;
+    border-radius: 50%;
+    margin-right: 80px;
+}
+
+.edu-card {
+    border: none;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    background-color: transparent !important;
+}
+
+.edu-cardfull {
+    /* border: 1px solid #810ca8; */
+    /* box-shadow: #ad02e6 0px 2px 12px 2px; */
+    /* box-shadow: #810ca8 0px 4px 24px; */
+    border-radius: 20px;
+
+    
+    border: 1px solid #bf00ff !important;
+    box-shadow: #e100ff 0px 1px 12px 2px;
+}
+
+.educationImg {
+    width: 45% !important;
+    max-height: 176px;
+    height: max-content;
+}
+
+.eduImg-Cont {
+    height: 160px;
+}

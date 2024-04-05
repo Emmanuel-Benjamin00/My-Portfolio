@@ -1,0 +1,22 @@
+.introImg{
+    width: 100%;
+}
+
+.introName{
+    color: #c147e9 !important;
+}
+
+.para-font{
+    font-size: 1.1em;
+}
+
+.imp-words{
+    color: #c147e9 !important;
+    font-weight: bold;
+}
+
+@media screen and (max-width: 768px) {
+    .para-font{
+        font-size: 0.8em;
+    }
+}

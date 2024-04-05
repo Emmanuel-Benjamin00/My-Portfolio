@@ -10,7 +10,7 @@ import './index.css'
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <App />
-    <ToastContainer style={{ '--customized-color': 'red', '--major-font': 'Arial' }} autoClose={2000} />
+    {/* <ToastContainer  className="custom-toast-container"  autoClose={2000} /> */}
 
   </React.StrictMode>,
 )

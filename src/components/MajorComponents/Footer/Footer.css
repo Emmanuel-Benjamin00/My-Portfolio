@@ -1,0 +1,14 @@
+.footer-block{
+    background-color:#810ca866;;
+}
+
+
+.social-background-circles-footer{
+    margin-left: 0.6em;
+}
+
+.footer-block *{
+    color: rgb(230, 230, 230) !important;
+    font-weight: 500;
+
+}

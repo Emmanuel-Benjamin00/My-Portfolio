@@ -1,0 +1,26 @@
+.logoName {
+    font-family: "Mr Dafoe", cursive;
+    font-weight: 500;
+    font-style: normal;
+    font-size: 1.5em;
+    color: #c147e9 !important;
+}
+
+.bracs {
+    font-weight: bold;
+    font-size: 1.7rem;
+    color: #e5b8f4 !important;
+    font-family: "Mr Dafoe", cursive;
+}
+
+@media screen and (max-width: 768px) {
+    .logoName {
+        font-weight: 100;
+        font-size: 1em;
+    }
+    .bracs {
+        font-weight: bold;
+        font-size: 1em;
+        font-family: "Mr Dafoe", cursive;
+    }
+}
