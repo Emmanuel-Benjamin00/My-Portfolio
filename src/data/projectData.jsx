@@ -19,24 +19,24 @@ const projectsData = [
         img: ChatAppImg,
         title: "Chat Web Page",
         content: "A chat application facilitates user authentication, real-time communication via Socket.io, notification sounds, and online status tracking. It utilizes MongoDB for data storage, Express.js for server-side logic, React for the UI, Node.js for runtime, and Zustand for state management.",
-        feCode: "https://github.com/Emmanuel-Benjamin00/chat-app/tree/main/frontend",
-        beCode: "https://github.com/Emmanuel-Benjamin00/chat-app/tree/main/backend",
+        feCode: "https://github.com/Emmanuel-Benjamin00/Chat-App",
+        beCode: "",
         site: "https://chat-app-si2s.onrender.com/"
     },
     {
         img: ECommerceImg,
         title: "E-Commerce Website",
         content: "A full-stack MERN ecommerce platform integrating Razorpay for secure online payments. Features user authentication, product, cart, and order management. Utilizes Redux, MongoDB, Express, and Node.js for seamless functionality.",
-        feCode: "https://github.com/Emmanuel-Benjamin00/chat-app/tree/main/frontend",
-        beCode: "https://github.com/Emmanuel-Benjamin00/chat-app/tree/main/backend",
+        feCode: "https://github.com/Emmanuel-Benjamin00/E-Commerce-Frontend",
+        beCode: "https://github.com/Emmanuel-Benjamin00/E-Commerce-Backend",
         site: "https://e-shopper24.netlify.app/"
     },
     {
         img: BlogImg,
         title: "Blog App",
         content: "A feature-rich blog website allowing user authentication, blog creation with admin approval, user dashboards, and token expiration, built with Reactjs for the frontend, Expressjs for the backend, and MongoDB for the database.",
-        feCode: "https://github.com/Emmanuel-Benjamin00/E-Commerce-Frontend",
-        beCode: "https://github.com/Emmanuel-Benjamin00/E-Commerce-Backend",
+        feCode: "https://github.com/Emmanuel-Benjamin00/blog-app-frontend",
+        beCode: "https://github.com/Emmanuel-Benjamin00/blog-app-backend",
         site: "https://bloginme.netlify.app/"
     },
     // {
@@ -59,7 +59,7 @@ const projectsData = [
         img: TravelLandingImg,
         title: "Travel Landing Page",
         content: "A visually appealing front-end webpage for the Bon Voyage Travel Landing Page, featuring service categories, top destinations, easy booking steps, and a convenient email subscription, built with HTML and CSS.",
-        feCode: "https://github.com/Emmanuel-Benjamin00/restaurant-landing-page",
+        feCode: "https://github.com/Emmanuel-Benjamin00/Travel-Landing-Page",
         beCode: "",
         site: "https://unique-lolly-2479b3.netlify.app/",
     },
