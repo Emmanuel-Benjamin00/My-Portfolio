@@ -18,7 +18,7 @@ const projectsData = [
     {
         img: ChatAppImg,
         title: "Chat Web Page",
-        content: "A chat site with socket.io",
+        content: "A chat application facilitates user authentication, real-time communication via Socket.io, notification sounds, and online status tracking. It utilizes MongoDB for data storage, Express.js for server-side logic, React for the UI, Node.js for runtime, and Zustand for state management.",
         feCode: "https://github.com/Emmanuel-Benjamin00/chat-app/tree/main/frontend",
         beCode: "https://github.com/Emmanuel-Benjamin00/chat-app/tree/main/backend",
         site: "https://chat-app-si2s.onrender.com/"
@@ -26,7 +26,7 @@ const projectsData = [
     {
         img: ECommerceImg,
         title: "E-Commerce Website",
-        content: "E-Commrce site with razorpay",
+        content: "A full-stack MERN ecommerce platform integrating Razorpay for secure online payments. Features user authentication, product, cart, and order management. Utilizes Redux, MongoDB, Express, and Node.js for seamless functionality.",
         feCode: "https://github.com/Emmanuel-Benjamin00/chat-app/tree/main/frontend",
         beCode: "https://github.com/Emmanuel-Benjamin00/chat-app/tree/main/backend",
         site: "https://e-shopper24.netlify.app/"
