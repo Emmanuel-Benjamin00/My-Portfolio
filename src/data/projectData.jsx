@@ -1,10 +1,10 @@
 import NotesAppImg from "../assets/ProjectsImages/NotesApp.png";
 import RestaurantLandingImg from "../assets/ProjectsImages/RestaurantLanding.png";
 import TravelLandingImg from "../assets/ProjectsImages/TravelLanding.png";
-import DiceGameImg from "../assets/ProjectsImages/DiceGame.png";
 import BlogImg from "../assets/ProjectsImages/blog.png"
 import TodoImg from "../assets/ProjectsImages/todoImg.png"
 import ChatAppImg from "../assets/ProjectsImages/chat-app.png"
+import ECommerceImg from "../assets/ProjectsImages/E-Commerce.png"
 
 const projectsData = [
     {
@@ -24,21 +24,29 @@ const projectsData = [
         site: "https://chat-app-si2s.onrender.com/"
     },
     {
+        img: ECommerceImg,
+        title: "E-Commerce Website",
+        content: "E-Commrce site with razorpay",
+        feCode: "https://github.com/Emmanuel-Benjamin00/chat-app/tree/main/frontend",
+        beCode: "https://github.com/Emmanuel-Benjamin00/chat-app/tree/main/backend",
+        site: "https://e-shopper24.netlify.app/"
+    },
+    {
         img: BlogImg,
         title: "Blog App",
         content: "A feature-rich blog website allowing user authentication, blog creation with admin approval, user dashboards, and token expiration, built with Reactjs for the frontend, Expressjs for the backend, and MongoDB for the database.",
-        feCode: "https://github.com/Emmanuel-Benjamin00/blog-app-frontend",
-        beCode: "https://github.com/Emmanuel-Benjamin00/blog-app-backend",
+        feCode: "https://github.com/Emmanuel-Benjamin00/E-Commerce-Frontend",
+        beCode: "https://github.com/Emmanuel-Benjamin00/E-Commerce-Backend",
         site: "https://bloginme.netlify.app/"
     },
-    {
-        img: TodoImg,
-        title: "ToDo App",
-        content: "A ToDo website with intuitive features such as ToDo input, categorized tabs, and status tracking, built using Reactjs for the frontend, Expressjs with React Redux for the backend, and MongoDB for the database.",
-        feCode: "https://github.com/Emmanuel-Benjamin00/Todo-App",
-        beCode: "https://github.com/Emmanuel-Benjamin00/todo-app-be",
-        site: "https://i-am-here-to-keep-your-notes.netlify.app/"
-    },
+    // {
+    //     img: TodoImg,
+    //     title: "ToDo App",
+    //     content: "A ToDo website with intuitive features such as ToDo input, categorized tabs, and status tracking, built using Reactjs for the frontend, Expressjs with React Redux for the backend, and MongoDB for the database.",
+    //     feCode: "https://github.com/Emmanuel-Benjamin00/Todo-App",
+    //     beCode: "https://github.com/Emmanuel-Benjamin00/todo-app-be",
+    //     site: "https://i-am-here-to-keep-your-notes.netlify.app/"
+    // },
     {
         img: NotesAppImg,
         title: "Notes App",
