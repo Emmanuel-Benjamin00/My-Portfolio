@@ -15,7 +15,7 @@ function Portfolio() {
           {
             projectsData.map((e, i) => (
                 <Col className="pb-4" key={i}>
-                  <ProjectsCard data={e} />
+                  <ProjectsCard data={e} index={i} />
                 </Col>
             ))
           }

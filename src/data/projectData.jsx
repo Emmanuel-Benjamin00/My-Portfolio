@@ -13,7 +13,15 @@ const projectsData = [
         content: "A feature-rich restaurant website with user authentication, delivery address management, live order tracking, daily discounts, and admin capabilities for editing the website and monitoring order statuses.",
         feCode: "https://github.com/Emmanuel-Benjamin00/restaurant-landing-page",
         beCode: "https://github.com/Emmanuel-Benjamin00/restaurant-landing-page-be",
-        site: "https://hotmeals-restaurant.netlify.app/"
+        site: "https://hotmeals-restaurant.netlify.app/",
+        userCredentials: [{
+            email:"user@gmail.com",
+            pass:"123"
+        }],
+        adminCredentials:{
+            email:"admin@gmail.com",
+            pass:"123"
+        }
     },
     {
         img: ChatAppImg,
@@ -21,7 +29,16 @@ const projectsData = [
         content: "A chat application facilitates user authentication, real-time communication via Socket.io, notification sounds, and online status tracking. It utilizes MongoDB for data storage, Express.js for server-side logic, React for the UI, Node.js for runtime, and Zustand for state management.",
         feCode: "https://github.com/Emmanuel-Benjamin00/Chat-App",
         beCode: "",
-        site: "https://chat-app-si2s.onrender.com/"
+        site: "https://chat-app-si2s.onrender.com/",
+        userCredentials: [
+        {
+            email:"user1@gmail.com",
+            pass:"123456"
+        },
+        {
+            email:"user2@gmail.com",
+            pass:"123456"
+        }],
     },
     {
         img: ECommerceImg,
@@ -29,7 +46,11 @@ const projectsData = [
         content: "A full-stack MERN ecommerce platform integrating Razorpay for secure online payments. Features user authentication, product, cart, and order management. Utilizes Redux, MongoDB, Express, and Node.js for seamless functionality.",
         feCode: "https://github.com/Emmanuel-Benjamin00/E-Commerce-Frontend",
         beCode: "https://github.com/Emmanuel-Benjamin00/E-Commerce-Backend",
-        site: "https://e-shopper24.netlify.app/"
+        site: "https://e-shopper24.netlify.app/",
+        userCredentials: [{
+            email:"user@gmail.com",
+            pass:"123456"
+        }],
     },
     {
         img: BlogImg,
@@ -37,7 +58,15 @@ const projectsData = [
         content: "A feature-rich blog website allowing user authentication, blog creation with admin approval, user dashboards, and token expiration, built with Reactjs for the frontend, Expressjs for the backend, and MongoDB for the database.",
         feCode: "https://github.com/Emmanuel-Benjamin00/blog-app-frontend",
         beCode: "https://github.com/Emmanuel-Benjamin00/blog-app-backend",
-        site: "https://bloginme.netlify.app/"
+        site: "https://bloginme.netlify.app/",
+        userCredentials: [{
+            email:"user@gmail.com",
+            pass:"123"
+        }],
+        adminCredentials:{
+            email:"admin@gmail.com",
+            pass:"123"
+        }
     },
     // {
     //     img: TodoImg,
