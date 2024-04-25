@@ -45,9 +45,17 @@ function ProjectsCard({ data, index }) {
                               </>
                             )
                           }
-                          <hr className="p-0 mt-2"/>
                         </div>
                       )}
+                      {data.payment && (
+                        <div className="pb-2 pt-2">
+                          <div className="pb-1">Payment Test Account Details:</div>
+                          <div>Card: {data.payment}  </div>
+                          <div>Date: <span style={{fontSize:"0.8em"}}>Any date after the current month</span>  </div>
+                          <div>CVV:  <span style={{fontSize:"0.8em"}}>Any three digit number</span></div>
+                        </div>
+                      )}
+                      <hr className="p-0 mt-1" />
                     </div>
                   </div>
                 </div>

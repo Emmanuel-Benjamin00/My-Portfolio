@@ -50,7 +50,8 @@ const projectsData = [
         userCredentials: [{
             email:"user@gmail.com",
             pass:"123456"
-        }],
+        }],        
+        payment:"5267 3181 8797 5449"
     },
     {
         img: BlogImg,
