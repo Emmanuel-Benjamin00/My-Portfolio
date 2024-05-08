@@ -41,7 +41,7 @@ function HeroMainContent() {
           </div>
         </div>
         <div className="d-flex gap-4 justify-content-center align-items-center">
-          <Link to="https://drive.google.com/file/d/1Bim2LnDpyZptIM16mefMrwepul1Rb_Jz/view?usp=sharing" target="_blank" className="socials-resume">View Resume</Link>
+          <Link to="https://drive.google.com/file/d/13VAKfNG2Jyq5lYWRyHYLaHmtUUwx7VJG/view?usp=sharing" target="_blank" className="socials-resume">View Resume</Link>
           <Link to="https://www.linkedin.com/in/emmanuel-b-b5145593/" target="_blank" className="socials"><Image src={linkedin} style={{ width: "35px" }} /></Link>
           <Link to="https://github.com/Emmanuel-Benjamin00" target="_blank" className="socials"><Image src={github} style={{ width: "35px" }} /></Link>
           <Link to="https://wa.me/9445482366" target="_blank" className="socials"><Image src={whatsapp} style={{ width: "35px" }} /></Link>
