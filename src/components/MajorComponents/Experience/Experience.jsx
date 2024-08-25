@@ -29,7 +29,7 @@ function Experience() {
                                 <br />
                                 Maintained an internal software of TVS electronics for updating records.
                                 <br />
-                                Javascript development Trainee & working as Fulstack developer.
+                                Javascript development Trainee & working as Fulstack developer in AIQ.
                             </>
                         }
                     />
