@@ -10,7 +10,7 @@ function Education() {
       <Container className="mt-5 pt-4">
         <Row className="">
           <Col className="justify-content-center d-flex i-work-with mb-3 headings">
-            Education & Certifications
+            Education & Certification
           </Col>
         </Row>
         <Row xs={1} md={3} className="g-2">
