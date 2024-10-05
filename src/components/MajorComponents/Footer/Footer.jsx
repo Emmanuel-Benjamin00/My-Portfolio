@@ -16,7 +16,7 @@ function Footer() {
         <footer className="pt-5">
           <div className="row d-flex justify-content-between px-4">
             <div className="col-12 col-md-4 mb-3">
-              <h5>Emmanuel's Portfolio</h5>
+              <h5>Emmanuel Portfolio</h5>
               <ul className="nav flex-column">
                 <li className="nav-item mb-2 pt-2"><p>Thank you for visiting my personal portfolio website. Connect with me over socials.</p></li>
                 <li className="nav-item mb-2"><p>Keep Rising. Connect with me over live chat</p></li>
