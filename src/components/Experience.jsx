@@ -5,7 +5,7 @@ import LiIcon from "../components/LiIcon"
 const Details = ({position, company, companyLink, time, address, work}) =>{
 
     const ref = useRef(null)
-    return <li ref={ref} className='my-8 first-mt-0 last-mt-0 w-[60%] mx-auto flex flex-column items-center justify-between'>
+    return <li ref={ref} className='my-8 first-mt-0 last-mt-0 w-[60%] mx-auto flex flex-col items-center justify-between'>
         <LiIcon reference={ref} />
         <motion.div
             initial={{y:50}}
