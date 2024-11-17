@@ -5,6 +5,7 @@ import "./globals.css";
 
 import { Montserrat } from 'next/font/google';
 import localFont from "next/font/local";
+import Script from 'next/script'
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -33,8 +34,16 @@ const RootLayout = ({ children }) => {
   return (
     <html lang="en">
       <body
-        className={`${montserrat.variable} antialiased bg-light font-mont w-full min-h-screen`}
+        className={`${montserrat.variable} antialiased bg-light font-mont w-full min-h-screen dark:bg-dark`}
       >
+        <Script strategy='beforeInteractive'>
+          {`          
+          document.documentElement.classList.toggle(
+  'dark',
+  localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+)
+`}
+        </Script>
         <NavBar />
         {children}
         <Footer />
