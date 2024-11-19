@@ -6,6 +6,7 @@ import "./globals.css";
 import { Montserrat } from 'next/font/google';
 import localFont from "next/font/local";
 import Script from 'next/script'
+import { AnimatePresence } from 'framer-motion';
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -45,7 +46,9 @@ const RootLayout = ({ children }) => {
 `}
         </Script>
         <NavBar />
+        <AnimatePresence mode="wait"> 
         {children}
+        </AnimatePresence>
         <Footer />
       </body>
     </html>
