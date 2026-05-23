@@ -1,5 +1,7 @@
 # Emmanuel's Portfolio
 
+Add backend for something, add own content
+
 Welcome to my portfolio! This repository showcases my skills, projects, and experiences in the world of developer. Feel free to explore and get to know more about me.
 
 ## About Me
