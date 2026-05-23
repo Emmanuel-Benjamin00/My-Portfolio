@@ -1,20 +1,40 @@
 import { useState, useEffect } from "react";
 import { NavLink, Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSun, faMoon, faCloudSun } from "@fortawesome/free-solid-svg-icons";
 import { siteConfig } from "../../config/siteConfig";
+import { useTheme } from "../../context/ThemeContext";
 import "./Navbar.css";
+
+function LiveClock() {
+  const [time, setTime] = useState("");
+
+  useEffect(() => {
+    const format = () => {
+      const now = new Date();
+      setTime(
+        now.toLocaleTimeString("en-IN", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        })
+      );
+    };
+    format();
+    const id = setInterval(format, 60000);
+    return () => clearInterval(id);
+  }, []);
+
+  return <span className="nav-widget-time">{time}</span>;
+}
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  const { theme, toggleTheme } = useTheme();
+  const isDark = theme === "dark";
 
   const navItems = [
-    { to: "/", label: "Home" },
+    { to: "/", label: "Home", end: true },
     { to: "/about", label: "About" },
     { to: "/work", label: "Work" },
     ...(siteConfig.blog.show ? [{ to: "/blog", label: "Blog" }] : []),
@@ -22,47 +42,66 @@ function Navbar() {
   ];
 
   return (
-    <header className={`nav ${isScrolled ? "nav-scrolled" : ""}`}>
-      <div className="container nav-inner">
-        <Link to="/" className="nav-brand" onClick={() => setIsOpen(false)}>
-          <span className="nav-brand-mark">&lt;/&gt;</span>
-          <span>{siteConfig.shortName}</span>
+    <header className="nav-dhiraj">
+      <div className="nav-dhiraj-inner">
+        <Link to="/" className="nav-logo-serif" onClick={() => setIsOpen(false)}>
+          {siteConfig.initials}
         </Link>
 
-        <nav className={`nav-links ${isOpen ? "nav-links-open" : ""}`}>
+        <nav className={`nav-pill ${isOpen ? "nav-pill-open" : ""}`}>
           {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
-              end={item.to === "/"}
+              end={item.end}
               className={({ isActive }) =>
-                `nav-link ${isActive ? "nav-link-active" : ""}`
+                `nav-pill-link ${isActive ? "nav-pill-link-active" : ""}`
               }
               onClick={() => setIsOpen(false)}
             >
               {item.label}
             </NavLink>
           ))}
-
-          <a
-            href={siteConfig.resume}
-            target="_blank"
-            rel="noreferrer"
-            className="btn btn-primary nav-cta"
+          <Link
+            to="/contact"
+            className="nav-pill-book"
+            onClick={() => setIsOpen(false)}
           >
-            Resume
-          </a>
+            Book a Call
+          </Link>
         </nav>
 
-        <button
-          className="nav-toggle"
-          onClick={() => setIsOpen((v) => !v)}
-          aria-label="Toggle menu"
-        >
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
+        <div className="nav-right">
+          <div className="nav-widget">
+            <span className="nav-widget-temp">
+              <FontAwesomeIcon icon={faCloudSun} />
+              32°C
+            </span>
+            <span className="nav-widget-divider" />
+            <span className="nav-widget-loc">{siteConfig.locationShort}</span>
+            <LiveClock />
+          </div>
+
+          <button
+            type="button"
+            className="nav-theme-btn"
+            onClick={toggleTheme}
+            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+          >
+            <FontAwesomeIcon icon={isDark ? faSun : faMoon} />
+          </button>
+
+          <button
+            type="button"
+            className="nav-menu-btn"
+            onClick={() => setIsOpen((v) => !v)}
+            aria-label="Toggle menu"
+          >
+            <span />
+            <span />
+            <span />
+          </button>
+        </div>
       </div>
     </header>
   );

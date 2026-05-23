@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" suppressHydrationWarning>
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -8,11 +8,25 @@
       name="description"
       content="Emmanuel Benjamin — Full Stack & Mobile Developer based in Chennai. Building modern web and mobile apps with React, React Native, and Python."
     />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#0a0a0a" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#ffffff" />
+
+    <script>
+      (function () {
+        var stored = localStorage.getItem("portfolio-theme");
+        var theme = stored;
+        if (theme !== "dark" && theme !== "light") {
+          theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "light" : "dark";
+        }
+        document.documentElement.setAttribute("data-theme", theme);
+        document.documentElement.style.colorScheme = theme === "light" ? "light" : "dark";
+      })();
+    </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap"
       rel="stylesheet"
     />
 

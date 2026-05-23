@@ -4,74 +4,84 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLinkedin, faGithub } from "@fortawesome/free-brands-svg-icons";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { siteConfig } from "../config/siteConfig";
-import projectsData from "../data/projectData";
-import skillData from "../data/SkillData";
-import Section from "../components/ui/Section";
-import ProjectCard from "../components/ui/ProjectCard";
 import "./Home.css";
 
 function Home() {
-  const featured = siteConfig.featuredProjects
-    .map((title) => projectsData.find((p) => p.title === title))
-    .filter(Boolean);
-
   return (
-    <>
-      {/* ── Hero ─────────────────────────────────────────────── */}
-      <section className="hero">
-        <div className="container hero-inner">
+    <div className="home-page">
+      <div className="home-arc-wrap" aria-hidden="true">
+        <motion.div
+          className="home-arc-glow home-arc-glow--purple"
+          animate={{ scale: [1, 1.15, 1], opacity: [0.6, 1, 0.6] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="home-arc-glow home-arc-glow--blue"
+          animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.9, 0.5] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <div className="home-arc-rim" />
+      </div>
+      <div className="home-mesh home-mesh--amber" aria-hidden="true" />
+      <div className="home-mesh home-mesh--cyan" aria-hidden="true" />
+
+      <section className="home-hero">
+        <div className="home-hero-inner">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            className="home-badge"
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.5 }}
           >
-            <div className="hero-pill">
-              <span className="hero-pill-dot"></span>
-              Available for opportunities
-            </div>
+            <span className="home-badge-dot" aria-hidden="true" />
+            Available for opportunities
           </motion.div>
 
           <motion.h1
-            className="hero-title"
+            className="home-headline"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
+            transition={{ duration: 0.6, delay: 0.08 }}
           >
-            Hi, I&apos;m <span className="text-accent">{siteConfig.shortName}</span>.
+            Hi, I&apos;m{" "}
+            <span className="home-headline-accent">{siteConfig.shortName}</span>.
             <br />
             {siteConfig.title}.
           </motion.h1>
 
           <motion.p
-            className="hero-tagline"
-            initial={{ opacity: 0, y: 20 }}
+            className="home-subline"
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.16 }}
           >
             {siteConfig.tagline} Based in {siteConfig.location} with{" "}
             {siteConfig.yearsOfExperience} years of experience.
           </motion.p>
 
           <motion.div
-            className="hero-actions"
-            initial={{ opacity: 0, y: 20 }}
+            className="home-cta-row"
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
+            transition={{ duration: 0.5, delay: 0.24 }}
           >
-            <Link to="/work" className="btn btn-primary">
-              View my work
-              <FontAwesomeIcon icon={faArrowRight} />
+            <Link to="/work" className="home-connect-btn">
+              <span>View my work</span>
+              <span className="home-connect-arrow" aria-hidden="true">
+                <FontAwesomeIcon icon={faArrowRight} />
+              </span>
             </Link>
-            <Link to="/contact" className="btn btn-secondary">
+
+            <Link to="/contact" className="home-cta-secondary">
               Get in touch
             </Link>
           </motion.div>
 
           <motion.div
-            className="hero-socials"
+            className="home-socials"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
+            transition={{ duration: 0.5, delay: 0.32 }}
           >
             <a
               href={siteConfig.socials.linkedin}
@@ -92,71 +102,7 @@ function Home() {
           </motion.div>
         </div>
       </section>
-
-      {/* ── Featured Work ────────────────────────────────────── */}
-      <Section
-        eyebrow="Selected Work"
-        title="Things I've built"
-        subtitle="A few recent projects. See all on the work page."
-      >
-        <div className="featured-grid">
-          {featured.map((project, idx) => (
-            <ProjectCard key={project.title} project={project} index={idx} />
-          ))}
-        </div>
-        <div className="featured-cta">
-          <Link to="/work" className="btn btn-secondary">
-            View all projects
-            <FontAwesomeIcon icon={faArrowRight} />
-          </Link>
-        </div>
-      </Section>
-
-      {/* ── Tech Stack preview ───────────────────────────────── */}
-      <Section eyebrow="Stack" title="Technologies I work with">
-        <div className="stack-grid">
-          {skillData.map((skill) => (
-            <div key={skill.name} className="stack-item">
-              <img src={skill.img} alt={skill.name} />
-              <span>{skill.name}</span>
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      {/* ── CTA ──────────────────────────────────────────────── */}
-      <section className="home-cta">
-        <div className="container">
-          <motion.div
-            className="home-cta-inner"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.5 }}
-          >
-            <h2>Let&apos;s build something together.</h2>
-            <p>
-              Open to full-time roles and interesting freelance projects.
-              Reach out and let&apos;s talk.
-            </p>
-            <div className="hero-actions">
-              <Link to="/contact" className="btn btn-primary">
-                Contact me
-                <FontAwesomeIcon icon={faArrowRight} />
-              </Link>
-              <a
-                href={siteConfig.resume}
-                target="_blank"
-                rel="noreferrer"
-                className="btn btn-secondary"
-              >
-                Download Resume
-              </a>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-    </>
+    </div>
   );
 }
 

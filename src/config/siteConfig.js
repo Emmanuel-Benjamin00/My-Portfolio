@@ -9,7 +9,9 @@ export const siteConfig = {
   title: "Full Stack & Mobile Developer",
   tagline:
     "I build modern web and mobile experiences with React, React Native, and Python.",
+  initials: "EB",
   location: "Chennai, India",
+  locationShort: "Chennai",
   yearsOfExperience: 2,
   email: "emmanuel26112000@gmail.com",
   phone: "+91 9445482366",
