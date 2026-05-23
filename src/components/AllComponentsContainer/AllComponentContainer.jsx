@@ -1,4 +1,3 @@
-import React from 'react'
 import About from '../MajorComponents/Hero/Hero'
 import Skills from '../MajorComponents/Skills/Skills'
 import Experience from '../MajorComponents/Experience/Experience'

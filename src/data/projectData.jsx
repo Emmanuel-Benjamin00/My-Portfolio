@@ -2,7 +2,6 @@ import NotesAppImg from "../assets/ProjectsImages/NotesApp.png";
 import RestaurantLandingImg from "../assets/ProjectsImages/RestaurantLanding.png";
 import TravelLandingImg from "../assets/ProjectsImages/TravelLanding.png";
 import BlogImg from "../assets/ProjectsImages/blog.png"
-import TodoImg from "../assets/ProjectsImages/todoImg.png"
 import ChatAppImg from "../assets/ProjectsImages/chat-app.png"
 import ECommerceImg from "../assets/ProjectsImages/E-Commerce.png"
 
@@ -69,14 +68,6 @@ const projectsData = [
             pass:"123"
         }
     },
-    // {
-    //     img: TodoImg,
-    //     title: "ToDo App",
-    //     content: "A ToDo website with intuitive features such as ToDo input, categorized tabs, and status tracking, built using Reactjs for the frontend, Expressjs with React Redux for the backend, and MongoDB for the database.",
-    //     feCode: "https://github.com/Emmanuel-Benjamin00/Todo-App",
-    //     beCode: "https://github.com/Emmanuel-Benjamin00/todo-app-be",
-    //     site: "https://i-am-here-to-keep-your-notes.netlify.app/"
-    // },
     {
         img: NotesAppImg,
         title: "Notes App",

@@ -1,16 +1,14 @@
-import React, { useState, useRef } from "react";
+import { useState } from "react";
 import { Container, Button, Col, Row } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import "./Contact.css"
 import AxiosService from "../../../common/ApiService";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { toast } from "react-toastify";
 
 function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-
-  const submitGiftRef = useRef(null);
 
   const validationSchema = Yup.object().shape({
     name: Yup.string().required("Name is required"),
@@ -26,19 +24,17 @@ function Contact() {
       mobile: "",
       message: "",
     },
-    validationSchema: validationSchema,
+    validationSchema,
     onSubmit: async (values, { resetForm }) => {
       try {
         setIsSubmitting(true);
-        let res = await AxiosService.post("/user", values);
+        const res = await AxiosService.post("/user", values);
         if (res.status === 201) {
-          console.log("Mail sent and data fetched");
           resetForm();
-          submitGiftRef.current.innerHTML = "Message sent Successfully to Emmanuel. Check your mail for confirmation"; 
+          toast.success("Message sent successfully! Check your mail for confirmation.");
         }
-      } catch (error) {
-        setErrorMessage("Internal Server Error")
-        console.log(error)
+      } catch {
+        toast.error("Something went wrong. Please try again.");
       } finally {
         setIsSubmitting(false);
       }
@@ -47,14 +43,14 @@ function Contact() {
 
   return (
     <>
-      <Container className="mt-5 pt-4 " >
+      <Container className="mt-5 pt-4">
         <Row className="mb-2">
           <Col className="d-flex justify-content-center headings">Contact Me</Col>
         </Row>
         <Row className="d-flex justify-content-center">
           <Col lg={6}>
             <Form onSubmit={formik.handleSubmit} className="d-flex flex-column justify-content-center contact-form">
-              <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+              <Form.Group className="mb-3">
                 <Form.Control
                   type="text"
                   placeholder="Your Name"
@@ -68,10 +64,10 @@ function Contact() {
                   <div className="error">{formik.errors.name}</div>
                 )}
               </Form.Group>
-              <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+              <Form.Group className="mb-3">
                 <Form.Control
                   type="email"
-                  placeholder="Your Mail ID"
+                  placeholder="Your Email"
                   className="form-input"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
@@ -82,11 +78,11 @@ function Contact() {
                   <div className="error">{formik.errors.email}</div>
                 )}
               </Form.Group>
-              <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+              <Form.Group className="mb-3">
                 <Form.Control
                   type="number"
-                  placeholder="Phone Number"
-                  className="form-input "
+                  placeholder="Phone Number (optional)"
+                  className="form-input"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   value={formik.values.mobile}
@@ -96,10 +92,7 @@ function Contact() {
                   <div className="error">{formik.errors.mobile}</div>
                 )}
               </Form.Group>
-              <Form.Group
-                className="mb-3"
-                controlId="exampleForm.ControlTextarea1"
-              >
+              <Form.Group className="mb-3">
                 <Form.Control
                   as="textarea"
                   rows={3}
@@ -114,11 +107,15 @@ function Contact() {
                   <div className="error">{formik.errors.message}</div>
                 )}
               </Form.Group>
-              <Button variant="primary" type="submit" className="card-button all-button" disabled={isSubmitting} style={{width:"100%"}}>
+              <Button
+                variant="primary"
+                type="submit"
+                className="card-button all-button"
+                disabled={isSubmitting}
+                style={{ width: "100%" }}
+              >
                 {isSubmitting ? 'Submitting...' : 'Submit'}
-              </Button>{" "}
-              <div ref={submitGiftRef} className="gift d-flex justify-content-center m-auto mt-3 align-items-center"></div> 
-              <p className="fw-bold m-auto mt-3">{errorMessage}</p>
+              </Button>
             </Form>
           </Col>
         </Row>

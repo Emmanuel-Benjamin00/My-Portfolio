@@ -1,5 +1,4 @@
 import crescentLogo from "../assets/EducationImages/CescentLogo.png"
-import corleyLogo from "../assets/EducationImages/corleyLogo.png"
 import guviLogo from "../assets/EducationImages/guviLogo.png"
 import udemyLogo from "../assets/EducationImages/Udemy.png"
 

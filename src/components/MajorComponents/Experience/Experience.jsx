@@ -1,10 +1,7 @@
-import React from 'react'
 import { Col, Container, Image, Row } from 'react-bootstrap'
-import Card from 'react-bootstrap/Card';
 import TVS from '../../../assets/Experience/TVSe.png'
-import ExpCArd from '../../NestedComponents/ExpCArd';
+import ExpCard from '../../NestedComponents/ExpCard'
 import './Experience.css'
-
 
 function Experience() {
     return (
@@ -19,17 +16,17 @@ function Experience() {
                     <Image src={TVS} className='TVSimage' />
                 </Col>
                 <Col md={10}>
-                    <ExpCArd
-                        title={"Graduate Engineer Trainee - Process Engineer"}
-                        company={"TVS Electronics"}
-                        year={"June 2022 - June 2023"}
+                    <ExpCard
+                        title="Graduate Engineer Trainee"
+                        company="TVS Electronics"
+                        year="June 2022 – June 2023"
                         description={
                             <>
-                                Worked as a Repair, Testing and QA specialist on hardware appliances like Laptops and TVS products.
+                                Worked as a Repair, Testing and QA specialist on hardware appliances including Laptops and TVS products.
                                 <br />
-                                Maintained an internal software of TVS electronics for updating records.
+                                Maintained an internal software tool for updating records.
                                 <br />
-                                Javascript development Trainee & working as Fulstack developer in AIQ.
+                                Transitioned into full-stack development, working as a Full Stack Developer in AIQ.
                             </>
                         }
                     />

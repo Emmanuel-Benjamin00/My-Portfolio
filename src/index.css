@@ -1,57 +1,48 @@
 :root {
   --button-hover-color: rgb(252, 112, 112);
-  --primary-text-color:#0D2551 ;
+  --primary-text-color: #0D2551;
 }
 
 * {
   font-family: "Montserrat", sans-serif;
   font-style: normal;
-  color: white !important;
-  /* color:var(--primary-text-color) !important; */
 }
 
 body {
-  /* background: linear-gradient(to top,rgb(230, 162, 162), rgb(255, 255, 255));
-  background-color: rgb(255, 245, 240) ;
-  color: #193B7B;
-  color:#132F65 ; */
-  background: linear-gradient(to top, black, #13011a); 
+  color: white;
+  background: linear-gradient(to top, black, #13011a);
 }
 
 .navbar-toggler-icon {
-  background-color: rgb(229,184,244); 
+  background-color: rgb(229, 184, 244);
   border-radius: 5px;
 }
 
-
-.edu-exp-app{
+.edu-exp-app {
   background-color: white;
   padding: 15px 0;
   padding-bottom: 50px;
 }
 
-.all-button{
-  /* width: 90%; */
+.all-button {
   background-color: transparent !important;
   color: white !important;
   border: 1px solid #E5B8F4 !important;
 }
 
-.all-button:hover{
-  background-color: rgb(129, 12, 168)!important;
+.all-button:hover {
+  background-color: rgb(129, 12, 168) !important;
   color: white !important;
 }
 
-.headings{
+.headings {
   font-size: 2rem;
   font-weight: 700;
 }
 
-
-.overlay{
+.overlay {
   position: relative;
 }
-
 
 .overlay::after {
   content: "";
@@ -60,8 +51,8 @@ body {
   left: 0px;
   min-width: 100%;
   min-height: 100vh;
-  background: url('./assets/bgImages/home-bg.jpg') ; 
-  background-repeat:no-repeat;
+  background: url('./assets/bgImages/home-bg.jpg');
+  background-repeat: no-repeat;
   opacity: 0.1;
   z-index: -2;
 }
@@ -73,17 +64,12 @@ body {
   left: 0px;
   min-width: 100%;
   min-height: 100%;
-  background: url('./assets/bgImages/bgstars.png') ; 
+  background: url('./assets/bgImages/bgstars.png');
   z-index: -1;
 }
-
 
 @media screen and (max-width: 768px) {
   .overlay::after {
     min-height: 90vh;
- 
   }
-
 }
-
-
