@@ -1,0 +1,231 @@
+/* ─── About intro ─── */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+.about-bio p {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  line-height: 1.75;
+  margin-bottom: 20px;
+}
+
+.about-bio p:last-child {
+  margin-bottom: 0;
+}
+
+.about-meta {
+  background-color: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.about-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.about-meta-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+.about-meta-item span:last-child,
+.about-meta-item a {
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+@media (max-width: 768px) {
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+
+/* ─── Skills ─── */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+}
+
+.skill-group h4 {
+  font-size: 1rem;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+
+.skill-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@media (max-width: 640px) {
+  .skills-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+/* ─── Timeline ─── */
+.timeline {
+  position: relative;
+  padding-left: 32px;
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background-color: var(--border);
+}
+
+.timeline-item {
+  position: relative;
+  padding-bottom: 40px;
+}
+
+.timeline-item:last-child {
+  padding-bottom: 0;
+}
+
+.timeline-marker {
+  position: absolute;
+  left: -32px;
+  top: 6px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: var(--accent);
+  border: 3px solid var(--bg);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.timeline-content h4 {
+  margin-bottom: 4px;
+}
+
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.timeline-period {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+}
+
+.timeline-company {
+  font-size: 0.95rem;
+  color: var(--accent);
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.timeline-desc {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+/* ─── Education ─── */
+.edu-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.edu-card {
+  background-color: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  transition: all 0.25s ease;
+}
+
+.edu-card:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-3px);
+}
+
+.edu-logo {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background-color: var(--bg-elev-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.edu-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 6px;
+}
+
+.edu-card h4 {
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+
+.edu-inst {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+.edu-year {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+}
+
+@media (max-width: 768px) {
+  .edu-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─── Now list ─── */
+.now-list {
+  list-style: none;
+  padding: 0;
+}
+
+.now-list li {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+.now-list li::before {
+  content: "→ ";
+  color: var(--accent);
+  margin-right: 8px;
+}

@@ -1,15 +1,25 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import AllComponentContainer from "./components/AllComponentsContainer/AllComponentContainer";
+import Layout from "./components/layout/Layout";
+import Home from "./pages/Home";
+import About from "./pages/About";
+import Work from "./pages/Work";
+import Blog from "./pages/Blog";
+import Contact from "./pages/Contact";
 
 function App() {
   return (
-    <div className="App" id="pagetodownload">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<AllComponentContainer />} />
-        </Routes>
-      </BrowserRouter>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/work" element={<Work />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="*" element={<Home />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 

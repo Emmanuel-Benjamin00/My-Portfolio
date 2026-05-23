@@ -1,14 +1,17 @@
 import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
-import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
-import './index.css'
+import './styles/theme.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <StrictMode>
     <App />
-    <ToastContainer autoClose={2000} />
+    <ToastContainer
+      position="bottom-right"
+      autoClose={3000}
+      theme="dark"
+    />
   </StrictMode>,
 )
