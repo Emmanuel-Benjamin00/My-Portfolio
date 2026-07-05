@@ -4,7 +4,7 @@ import { useResumeAccess } from "./ResumeAccessContext";
 // The secret unlock code. Type these keys in order (case-insensitive)
 // while on the About page to reveal the hidden Resume tab.
 // Change this to anything only you know.
-const SECRET = "resume";
+const SECRET = "secretresume";
 
 // Listens for the secret sequence being typed anywhere on the page.
 // Only wire this up on the About page. Ignores typing inside inputs,
