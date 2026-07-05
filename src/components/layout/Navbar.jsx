@@ -38,6 +38,7 @@ function Navbar() {
     { to: "/about", label: "About" },
     { to: "/work", label: "Work" },
     ...(siteConfig.blog.show ? [{ to: "/blog", label: "Blog" }] : []),
+    { to: "/resume-builder", label: "Resume" },
     { to: "/contact", label: "Contact" },
   ];
 
