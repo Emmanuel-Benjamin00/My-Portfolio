@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { motion } from "framer-motion";
 
-function Section({ eyebrow, title, subtitle, children, id }) {
+function Section({ eyebrow, title, subtitle, children, id, onEyebrowClick }) {
   return (
     <section className="section" id={id}>
       <div className="container">
@@ -13,7 +13,11 @@ function Section({ eyebrow, title, subtitle, children, id }) {
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.5 }}
           >
-            {eyebrow && <span className="section-eyebrow">{eyebrow}</span>}
+            {eyebrow && (
+              <span className="section-eyebrow" onClick={onEyebrowClick}>
+                {eyebrow}
+              </span>
+            )}
             {title && <h2 className="section-title">{title}</h2>}
             {subtitle && <p className="section-subtitle">{subtitle}</p>}
           </motion.div>
@@ -30,6 +34,7 @@ Section.propTypes = {
   subtitle: PropTypes.string,
   children: PropTypes.node,
   id: PropTypes.string,
+  onEyebrowClick: PropTypes.func,
 };
 
 export default Section;

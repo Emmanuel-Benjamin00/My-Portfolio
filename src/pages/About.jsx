@@ -11,13 +11,16 @@ import "./About.css";
 function About() {
   const experience = siteConfig.experience.filter((e) => !e.hidden);
 
-  // Secret: type the unlock code anywhere on this page to reveal the Resume tab.
-  useResumeSecret();
+  // Secret: type the unlock code anywhere on this page (desktop) or tap the
+  // "About me" label 10 times (mobile) to reveal the Resume tab.
+  const { onSecretTap } = useResumeSecret();
   const { unlocked } = useResumeAccess();
   const wasUnlocked = useRef(unlocked);
   useEffect(() => {
     if (unlocked && !wasUnlocked.current) {
       toast.success("Resume Builder unlocked 🔓");
+    } else if (!unlocked && wasUnlocked.current) {
+      toast.info("Resume Builder hidden 🔒");
     }
     wasUnlocked.current = unlocked;
   }, [unlocked]);
@@ -25,7 +28,11 @@ function About() {
   return (
     <>
       {/* ── Intro ─── */}
-      <Section eyebrow="About me" title={siteConfig.about.headline}>
+      <Section
+        eyebrow="About me"
+        title={siteConfig.about.headline}
+        onEyebrowClick={onSecretTap}
+      >
         <div className="about-grid">
           <motion.div
             className="about-bio"
