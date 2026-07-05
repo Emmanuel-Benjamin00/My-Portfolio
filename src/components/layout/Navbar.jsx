@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSun, faMoon, faCloudSun } from "@fortawesome/free-solid-svg-icons";
 import { siteConfig } from "../../config/siteConfig";
 import { useTheme } from "../../context/ThemeContext";
+import { useResumeAccess } from "../../context/ResumeAccessContext";
 import "./Navbar.css";
 
 function LiveClock() {
@@ -31,6 +32,7 @@ function LiveClock() {
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
+  const { unlocked } = useResumeAccess();
   const isDark = theme === "dark";
 
   const navItems = [
@@ -38,7 +40,8 @@ function Navbar() {
     { to: "/about", label: "About" },
     { to: "/work", label: "Work" },
     ...(siteConfig.blog.show ? [{ to: "/blog", label: "Blog" }] : []),
-    { to: "/resume-builder", label: "Resume" },
+    // Hidden until the secret sequence is typed on the About page.
+    ...(unlocked ? [{ to: "/resume-builder", label: "Resume" }] : []),
     { to: "/contact", label: "Contact" },
   ];
 

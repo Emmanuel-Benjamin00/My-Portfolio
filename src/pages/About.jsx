@@ -1,11 +1,26 @@
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import { toast } from "react-toastify";
 import { siteConfig } from "../config/siteConfig";
 import educationData from "../data/EducationData";
 import Section from "../components/ui/Section";
+import { useResumeAccess } from "../context/ResumeAccessContext";
+import { useResumeSecret } from "../context/useResumeSecret";
 import "./About.css";
 
 function About() {
   const experience = siteConfig.experience.filter((e) => !e.hidden);
+
+  // Secret: type the unlock code anywhere on this page to reveal the Resume tab.
+  useResumeSecret();
+  const { unlocked } = useResumeAccess();
+  const wasUnlocked = useRef(unlocked);
+  useEffect(() => {
+    if (unlocked && !wasUnlocked.current) {
+      toast.success("Resume Builder unlocked 🔓");
+    }
+    wasUnlocked.current = unlocked;
+  }, [unlocked]);
 
   return (
     <>
