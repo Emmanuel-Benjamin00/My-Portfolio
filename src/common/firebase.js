@@ -37,6 +37,9 @@ export const isConfigured = Boolean(
   firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.appId
 );
 
+// Only this account may upload / replace the public resume file.
+export const OWNER_EMAIL = "emmanuel26112000@gmail.com";
+
 let auth = null;
 let db = null;
 let provider = null;
@@ -85,4 +88,72 @@ export async function saveResume(uid, data) {
     data,
     updatedAt: new Date().toISOString(),
   });
+}
+
+/* ── Public resume file (owner uploads, everyone can view) ──
+ *
+ * No paid Storage bucket needed: the PDF itself is stored (base64-encoded)
+ * inside a single public Firestore document. Each upload OVERWRITES that
+ * one doc, so the previous file is discarded and the latest always wins.
+ * The frontend rebuilds the PDF from the stored data and opens it.
+ *
+ * Firestore caps a document at ~1 MB, so the PDF must stay under that.
+ *
+ * Requires this Firestore rule (set once in the console):
+ *   match /public/{docId} {
+ *     allow read: if true;
+ *     allow write: if request.auth != null
+ *       && request.auth.token.email == "emmanuel26112000@gmail.com";
+ *   }
+ */
+const RESUME_DOC = ["public", "resume"];
+// Keep the base64 payload safely under Firestore's ~1 MB document limit.
+export const RESUME_MAX_BYTES = 700 * 1024;
+
+function fileToDataUrl(file, onProgress) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error);
+    reader.onprogress = (e) => {
+      // Reading/encoding is ~90% of the work; the Firestore write finishes it.
+      if (e.lengthComputable && onProgress) {
+        onProgress(Math.round((e.loaded / e.total) * 90));
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// Upload (overwrite) the public resume PDF; returns its base64 data URL.
+// `onProgress(pct)` is called with 0–100 as the upload advances.
+export async function uploadResumeFile(file, onProgress) {
+  if (!db) throw new Error("Firebase is not configured.");
+  if (file.size > RESUME_MAX_BYTES) {
+    throw new Error("FILE_TOO_LARGE");
+  }
+  onProgress?.(0);
+  const dataUrl = await fileToDataUrl(file, onProgress);
+  onProgress?.(95); // encoded — now committing to Firestore
+  await setDoc(doc(db, ...RESUME_DOC), {
+    dataUrl,
+    fileName: file.name,
+    updatedAt: new Date().toISOString(),
+  });
+  onProgress?.(100);
+  return dataUrl;
+}
+
+// Read the latest public resume, or null if none uploaded yet.
+// Returns { dataUrl, fileName } so the frontend can rebuild the PDF.
+export async function loadResumeData() {
+  if (!db) return null;
+  try {
+    const snap = await getDoc(doc(db, ...RESUME_DOC));
+    if (!snap.exists()) return null;
+    const { dataUrl, fileName } = snap.data();
+    return dataUrl ? { dataUrl, fileName } : null;
+  } catch {
+    return null;
+  }
 }

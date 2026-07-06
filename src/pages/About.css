@@ -47,6 +47,58 @@
   color: var(--text);
 }
 
+.about-resume-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.about-upload-btn {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: var(--radius-sm, 6px);
+  border: 1px solid var(--border);
+  background-color: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.about-upload-btn:hover:not(:disabled) {
+  border-color: var(--accent, #a855f7);
+  color: var(--text);
+}
+
+.about-upload-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.about-upload-btn.about-upload-done {
+  border-color: #22c55e;
+  color: #22c55e;
+  opacity: 1;
+}
+
+.about-upload-bar {
+  display: inline-block;
+  width: 90px;
+  height: 5px;
+  border-radius: 999px;
+  background-color: var(--border);
+  overflow: hidden;
+}
+
+.about-upload-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background-color: var(--accent, #c084fc);
+  transition: width 0.2s ease;
+}
+
 @media (max-width: 768px) {
   .about-grid {
     grid-template-columns: 1fr;

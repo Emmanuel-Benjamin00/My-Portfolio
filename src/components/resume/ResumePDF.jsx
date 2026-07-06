@@ -16,11 +16,11 @@ const styles = StyleSheet.create({
     fontFamily: "Helvetica",
     fontSize: 10,
     color: "#000000",
-    lineHeight: 1.25,
+    lineHeight: 1.4,
   },
 
   /* Header */
-  header: { marginBottom: 4 },
+  header: { marginBottom: 6 },
   name: {
     fontFamily: "Helvetica-Bold",
     fontSize: 22,
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
   sep: { color: "#000000" },
 
   /* Section heading with rule */
-  section: { marginTop: 10 },
+  section: { marginTop: 15 },
   sectionTitle: {
     fontFamily: "Helvetica-Bold",
     fontSize: 11,
@@ -49,14 +49,14 @@ const styles = StyleSheet.create({
   rule: {
     borderBottomWidth: 0.7,
     borderBottomColor: "#000000",
-    marginTop: 2,
-    marginBottom: 4,
+    marginTop: 3,
+    marginBottom: 6,
   },
 
   summary: { fontSize: 10, textAlign: "justify" },
 
   /* Entry (experience / education / project) */
-  entry: { marginTop: 4 },
+  entry: { marginTop: 8 },
   entryRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -66,18 +66,18 @@ const styles = StyleSheet.create({
   entrySubRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 1,
+    marginTop: 2,
   },
   entrySubLeft: { fontFamily: "Helvetica-Oblique", fontSize: 10 },
   entrySubRight: { fontFamily: "Helvetica-Oblique", fontSize: 10 },
 
   /* Bullets */
-  bulletRow: { flexDirection: "row", marginTop: 2, paddingLeft: 8 },
+  bulletRow: { flexDirection: "row", marginTop: 4, paddingLeft: 8 },
   bulletDot: { width: 10, fontSize: 10 },
   bulletText: { flex: 1, fontSize: 10, textAlign: "justify" },
 
   /* Skills / one-line rows */
-  skillRow: { marginTop: 2, flexDirection: "row" },
+  skillRow: { marginTop: 4, flexDirection: "row" },
   skillLabel: { fontFamily: "Helvetica-Bold", fontSize: 10 },
   skillValue: { fontSize: 10, flex: 1 },
 
@@ -88,10 +88,10 @@ const styles = StyleSheet.create({
   fieldRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 1,
+    marginTop: 2,
   },
   fieldText: { fontSize: 10 },
-  fieldPara: { fontSize: 10, textAlign: "justify", marginTop: 1 },
+  fieldPara: { fontSize: 10, textAlign: "justify", marginTop: 2 },
   fBold: { fontFamily: "Helvetica-Bold" },
   fItalic: { fontFamily: "Helvetica-Oblique" },
   fNormal: { fontFamily: "Helvetica" },
@@ -129,8 +129,11 @@ function Bullet({ children }) {
 }
 
 function SectionHeading({ title }) {
+  // minPresenceAhead: if there isn't at least this much room below the heading
+  // on the current page, push the whole heading to the next page instead of
+  // stranding it above a blank gap (its first entry uses wrap={false}).
   return (
-    <View style={styles.section}>
+    <View style={styles.section} minPresenceAhead={72}>
       <Text style={styles.sectionTitle}>{title}</Text>
       <View style={styles.rule} />
     </View>
@@ -290,14 +293,18 @@ export default function ResumePDF({ data }) {
           if (!isFilled(e.company) && !isFilled(e.role) && !bullets.length)
             return null;
           return (
-            <View key={i} style={styles.entry} wrap={false}>
-              <View style={styles.entryRow}>
-                <Text style={styles.entryTitle}>{e.company}</Text>
-                <Text style={styles.entryRight}>{e.dates}</Text>
-              </View>
-              <View style={styles.entrySubRow}>
-                <Text style={styles.entrySubLeft}>{e.role}</Text>
-                <Text style={styles.entrySubRight}>{e.location}</Text>
+            <View key={i} style={styles.entry}>
+              {/* Header stays together and won't orphan at a page bottom; the
+                  bullets below are free to flow onto the next page. */}
+              <View wrap={false} minPresenceAhead={40}>
+                <View style={styles.entryRow}>
+                  <Text style={styles.entryTitle}>{e.company}</Text>
+                  <Text style={styles.entryRight}>{e.dates}</Text>
+                </View>
+                <View style={styles.entrySubRow}>
+                  <Text style={styles.entrySubLeft}>{e.role}</Text>
+                  <Text style={styles.entrySubRight}>{e.location}</Text>
+                </View>
               </View>
               {bullets.map((b, j) => (
                 <Bullet key={j}>{b}</Bullet>
@@ -317,13 +324,15 @@ export default function ResumePDF({ data }) {
           const bullets = splitLines(p.bullets);
           if (!isFilled(p.name) && !bullets.length) return null;
           return (
-            <View key={i} style={styles.entry} wrap={false}>
-              <Text style={styles.projectTitleRow}>
-                <Text style={styles.entryTitle}>{p.name}</Text>
-                {isFilled(p.tech) && (
-                  <Text style={styles.projectTech}>{"  |  " + p.tech}</Text>
-                )}
-              </Text>
+            <View key={i} style={styles.entry}>
+              <View wrap={false} minPresenceAhead={40}>
+                <Text style={styles.projectTitleRow}>
+                  <Text style={styles.entryTitle}>{p.name}</Text>
+                  {isFilled(p.tech) && (
+                    <Text style={styles.projectTech}>{"  |  " + p.tech}</Text>
+                  )}
+                </Text>
+              </View>
               {bullets.map((b, j) => (
                 <Bullet key={j}>{b}</Bullet>
               ))}
@@ -412,7 +421,7 @@ function renderCustomSection(sec) {
     <View>
       <SectionHeading title={sec.title || "Additional"} />
       {items.map((item, idx) => (
-        <View key={idx} style={styles.entry} wrap={false}>
+        <View key={idx} style={styles.entry} minPresenceAhead={40}>
           {renderEntryFields(fields, item)}
         </View>
       ))}
