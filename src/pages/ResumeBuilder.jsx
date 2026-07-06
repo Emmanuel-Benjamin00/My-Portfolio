@@ -15,7 +15,15 @@ import {
   migrateData,
   findMissingRequired,
 } from "../components/resume/customFields";
-import { Input, Textarea, AddBtn, RemoveBtn } from "../components/resume/formControls";
+import {
+  Input,
+  Textarea,
+  AddBtn,
+  RemoveBtn,
+  ShowToggle,
+  MoveButtons,
+  CollapsibleCard,
+} from "../components/resume/formControls";
 import CustomSectionEditor from "../components/resume/CustomSectionEditor";
 import {
   isConfigured as cloudEnabled,
@@ -43,6 +51,7 @@ const emptyEducation = () => ({
   dates: "",
 });
 const emptySkill = () => ({ label: "", value: "" });
+const emptyCert = () => ({ text: "", disabled: false });
 const emptyCustomSection = () => {
   const fields = defaultFields();
   return { id: genSectionId(), title: "", fields, items: [emptyItem(fields)] };
@@ -63,17 +72,30 @@ const initialData = {
   experience: [emptyExperience()],
   projects: [emptyProject()],
   education: [emptyEducation()],
-  certifications: [""],
+  certifications: [emptyCert()],
   customSections: [],
   sectionOrder: [...BUILTIN_SECTIONS],
+  disabledSections: [], // section keys hidden from the PDF
+  notes: "", // private scratchpad — never rendered into the PDF
 };
 
 const STORAGE_KEY = "resume-builder-data";
 
+// Bring any saved/older resume up to the current shape.
+function hydrate(raw) {
+  const data = migrateData({ ...initialData, ...raw });
+  // certifications: old string[] → { text, disabled }[]
+  data.certifications = (data.certifications || []).map((c) =>
+    typeof c === "string" ? { text: c, disabled: false } : c
+  );
+  if (!Array.isArray(data.disabledSections)) data.disabledSections = [];
+  return data;
+}
+
 function loadInitial() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) return migrateData({ ...initialData, ...JSON.parse(saved) });
+    if (saved) return hydrate(JSON.parse(saved));
   } catch {
     /* ignore corrupt storage */
   }
@@ -109,7 +131,7 @@ export default function ResumeBuilder() {
         try {
           const cloud = await loadResume(u.uid);
           if (cloud) {
-            setData(migrateData({ ...initialData, ...cloud }));
+            setData(hydrate(cloud));
             toast.info("Loaded your saved resume from the cloud.");
           }
           setSyncState("saved");
@@ -171,12 +193,6 @@ export default function ResumeBuilder() {
       return { ...d, [list]: next };
     });
 
-  const setStringItem = (list, index, value) =>
-    setData((d) => {
-      const next = [...d[list]];
-      next[index] = value;
-      return { ...d, [list]: next };
-    });
 
   const addItem = (list, factory) =>
     setData((d) => ({ ...d, [list]: [...d[list], factory()] }));
@@ -186,6 +202,17 @@ export default function ResumeBuilder() {
       ...d,
       [list]: d[list].filter((_, i) => i !== index),
     }));
+
+  // Reorder an entry within a section list.
+  const moveListItem = (list, from, to) =>
+    setData((d) => {
+      const arr = d[list];
+      if (to < 0 || to >= arr.length || from === to) return d;
+      const next = [...arr];
+      const [m] = next.splice(from, 1);
+      next.splice(to, 0, m);
+      return { ...d, [list]: next };
+    });
 
   /* ── custom-section updaters ── */
   const addSection = () =>
@@ -219,6 +246,14 @@ export default function ResumeBuilder() {
       const [moved] = next.splice(from, 1);
       next.splice(to, 0, moved);
       return { ...d, sectionOrder: next };
+    });
+
+  // Hide/show a whole section in the PDF (kept in the form either way).
+  const toggleSection = (key) =>
+    setData((d) => {
+      const set = new Set(d.disabledSections || []);
+      set.has(key) ? set.delete(key) : set.add(key);
+      return { ...d, disabledSections: [...set] };
     });
 
   // Replace a whole custom section (fields + items + title) at index si.
@@ -324,12 +359,13 @@ export default function ResumeBuilder() {
           <SectionArranger
             order={normalizeOrder(data)}
             customSections={data.customSections}
+            disabledSections={data.disabledSections}
             onMove={moveSection}
+            onToggle={toggleSection}
           />
 
           {/* ── Personal ── */}
-          <fieldset className="rb-card">
-            <legend>Personal Details</legend>
+          <CollapsibleCard title="Personal Details">
             <div className="rb-grid">
               <Input
                 label="Full Name"
@@ -374,24 +410,22 @@ export default function ResumeBuilder() {
                 placeholder="yoursite.netlify.app"
               />
             </div>
-          </fieldset>
+          </CollapsibleCard>
 
           {/* ── Summary ── */}
-          <fieldset className="rb-card">
-            <legend>Professional Summary</legend>
+          <CollapsibleCard title="Professional Summary">
             <Textarea
               value={data.summary}
               onChange={(v) => setField("summary", v)}
               placeholder="A short 2–3 sentence overview of who you are and what you do."
               rows={4}
             />
-          </fieldset>
+          </CollapsibleCard>
 
           {/* ── Skills ── */}
-          <fieldset className="rb-card">
-            <legend>Technical Skills</legend>
+          <CollapsibleCard title="Technical Skills">
             {data.skills.map((s, i) => (
-              <div className="rb-row" key={i}>
+              <div className={`rb-row ${s.disabled ? "rb-item-off" : ""}`} key={i}>
                 <div className="rb-grid rb-grid-2 rb-flex1">
                   <Input
                     label="Category"
@@ -406,6 +440,16 @@ export default function ResumeBuilder() {
                     placeholder="React, TypeScript, Redux…"
                   />
                 </div>
+                <MoveButtons
+                  onUp={() => moveListItem("skills", i, i - 1)}
+                  onDown={() => moveListItem("skills", i, i + 1)}
+                  disableUp={i === 0}
+                  disableDown={i === data.skills.length - 1}
+                />
+                <ShowToggle
+                  checked={!s.disabled}
+                  onChange={(on) => setListItem("skills", i, "disabled", !on)}
+                />
                 <RemoveBtn
                   onClick={() => removeItem("skills", i)}
                   disabled={data.skills.length === 1}
@@ -413,19 +457,35 @@ export default function ResumeBuilder() {
               </div>
             ))}
             <AddBtn label="Add skill category" onClick={() => addItem("skills", emptySkill)} />
-          </fieldset>
+          </CollapsibleCard>
 
           {/* ── Experience ── */}
-          <fieldset className="rb-card">
-            <legend>Experience</legend>
+          <CollapsibleCard title="Experience">
             {data.experience.map((e, i) => (
-              <div className="rb-item" key={i}>
+              <div
+                className={`rb-item ${e.disabled ? "rb-item-off" : ""}`}
+                key={i}
+              >
                 <div className="rb-item-head">
                   <span>Experience {i + 1}</span>
-                  <RemoveBtn
-                    onClick={() => removeItem("experience", i)}
-                    disabled={data.experience.length === 1}
-                  />
+                  <div className="rb-item-actions">
+                    <MoveButtons
+                      onUp={() => moveListItem("experience", i, i - 1)}
+                      onDown={() => moveListItem("experience", i, i + 1)}
+                      disableUp={i === 0}
+                      disableDown={i === data.experience.length - 1}
+                    />
+                    <ShowToggle
+                      checked={!e.disabled}
+                      onChange={(on) =>
+                        setListItem("experience", i, "disabled", !on)
+                      }
+                    />
+                    <RemoveBtn
+                      onClick={() => removeItem("experience", i)}
+                      disabled={data.experience.length === 1}
+                    />
+                  </div>
                 </div>
                 <div className="rb-grid rb-grid-2">
                   <Input
@@ -466,19 +526,35 @@ export default function ResumeBuilder() {
               label="Add experience"
               onClick={() => addItem("experience", emptyExperience)}
             />
-          </fieldset>
+          </CollapsibleCard>
 
           {/* ── Projects ── */}
-          <fieldset className="rb-card">
-            <legend>Projects</legend>
+          <CollapsibleCard title="Projects">
             {data.projects.map((p, i) => (
-              <div className="rb-item" key={i}>
+              <div
+                className={`rb-item ${p.disabled ? "rb-item-off" : ""}`}
+                key={i}
+              >
                 <div className="rb-item-head">
                   <span>Project {i + 1}</span>
-                  <RemoveBtn
-                    onClick={() => removeItem("projects", i)}
-                    disabled={data.projects.length === 1}
-                  />
+                  <div className="rb-item-actions">
+                    <MoveButtons
+                      onUp={() => moveListItem("projects", i, i - 1)}
+                      onDown={() => moveListItem("projects", i, i + 1)}
+                      disableUp={i === 0}
+                      disableDown={i === data.projects.length - 1}
+                    />
+                    <ShowToggle
+                      checked={!p.disabled}
+                      onChange={(on) =>
+                        setListItem("projects", i, "disabled", !on)
+                      }
+                    />
+                    <RemoveBtn
+                      onClick={() => removeItem("projects", i)}
+                      disabled={data.projects.length === 1}
+                    />
+                  </div>
                 </div>
                 <div className="rb-grid rb-grid-2">
                   <Input
@@ -504,19 +580,35 @@ export default function ResumeBuilder() {
               </div>
             ))}
             <AddBtn label="Add project" onClick={() => addItem("projects", emptyProject)} />
-          </fieldset>
+          </CollapsibleCard>
 
           {/* ── Education ── */}
-          <fieldset className="rb-card">
-            <legend>Education</legend>
+          <CollapsibleCard title="Education">
             {data.education.map((e, i) => (
-              <div className="rb-item" key={i}>
+              <div
+                className={`rb-item ${e.disabled ? "rb-item-off" : ""}`}
+                key={i}
+              >
                 <div className="rb-item-head">
                   <span>Education {i + 1}</span>
-                  <RemoveBtn
-                    onClick={() => removeItem("education", i)}
-                    disabled={data.education.length === 1}
-                  />
+                  <div className="rb-item-actions">
+                    <MoveButtons
+                      onUp={() => moveListItem("education", i, i - 1)}
+                      onDown={() => moveListItem("education", i, i + 1)}
+                      disableUp={i === 0}
+                      disableDown={i === data.education.length - 1}
+                    />
+                    <ShowToggle
+                      checked={!e.disabled}
+                      onChange={(on) =>
+                        setListItem("education", i, "disabled", !on)
+                      }
+                    />
+                    <RemoveBtn
+                      onClick={() => removeItem("education", i)}
+                      disabled={data.education.length === 1}
+                    />
+                  </div>
                 </div>
                 <div className="rb-grid rb-grid-2">
                   <Input
@@ -550,20 +642,31 @@ export default function ResumeBuilder() {
               label="Add education"
               onClick={() => addItem("education", emptyEducation)}
             />
-          </fieldset>
+          </CollapsibleCard>
 
           {/* ── Certifications ── */}
-          <fieldset className="rb-card">
-            <legend>Certifications & Training</legend>
+          <CollapsibleCard title="Certifications & Training">
             {data.certifications.map((c, i) => (
-              <div className="rb-row" key={i}>
+              <div className={`rb-row ${c.disabled ? "rb-item-off" : ""}`} key={i}>
                 <div className="rb-flex1">
                   <Input
-                    value={c}
-                    onChange={(v) => setStringItem("certifications", i, v)}
+                    value={c.text}
+                    onChange={(v) => setListItem("certifications", i, "text", v)}
                     placeholder="Full-Stack Developer Program – Guvi"
                   />
                 </div>
+                <MoveButtons
+                  onUp={() => moveListItem("certifications", i, i - 1)}
+                  onDown={() => moveListItem("certifications", i, i + 1)}
+                  disableUp={i === 0}
+                  disableDown={i === data.certifications.length - 1}
+                />
+                <ShowToggle
+                  checked={!c.disabled}
+                  onChange={(on) =>
+                    setListItem("certifications", i, "disabled", !on)
+                  }
+                />
                 <RemoveBtn
                   onClick={() => removeItem("certifications", i)}
                   disabled={data.certifications.length === 1}
@@ -572,14 +675,9 @@ export default function ResumeBuilder() {
             ))}
             <AddBtn
               label="Add certification"
-              onClick={() =>
-                setData((d) => ({
-                  ...d,
-                  certifications: [...d.certifications, ""],
-                }))
-              }
+              onClick={() => addItem("certifications", emptyCert)}
             />
-          </fieldset>
+          </CollapsibleCard>
 
           {/* ── Custom sections (fully user-defined fields) ── */}
           {data.customSections.map((sec, si) => (
@@ -601,6 +699,26 @@ export default function ResumeBuilder() {
               Internships, Awards, Languages, Volunteering…
             </span>
           </button>
+
+          {/* ── Private scratchpad — future points, never in the PDF ── */}
+          <CollapsibleCard
+            title="Scratchpad · Future Points"
+            className="rb-card-notes"
+            defaultOpen={false}
+          >
+            <p className="rb-notes-hint">
+              Jot down points you might add to your resume later. This is just
+              for you — it is saved &amp; synced but never appears in the PDF.
+            </p>
+            <Textarea
+              value={data.notes}
+              onChange={(v) => setField("notes", v)}
+              placeholder={
+                "• Led migration to TypeScript\n• AWS certification (in progress)\n• Open-source contribution to …"
+              }
+              rows={6}
+            />
+          </CollapsibleCard>
         </form>
 
         {showPreview && (
@@ -693,10 +811,11 @@ SyncBar.propTypes = {
   onSignOut: PropTypes.func.isRequired,
 };
 
-/* ── Drag-and-drop section reordering ── */
-function SectionArranger({ order, customSections, onMove }) {
+/* ── Drag-and-drop section reordering + show/hide ── */
+function SectionArranger({ order, customSections, disabledSections, onMove, onToggle }) {
   const [dragIndex, setDragIndex] = useState(null);
   const [overIndex, setOverIndex] = useState(null);
+  const hidden = new Set(disabledSections || []);
 
   const handleDrop = (target) => {
     if (dragIndex !== null && target !== null) onMove(dragIndex, target);
@@ -708,56 +827,60 @@ function SectionArranger({ order, customSections, onMove }) {
     <fieldset className="rb-card rb-arrange">
       <legend>Arrange Sections</legend>
       <p className="rb-arrange-hint">
-        Drag the ⠿ handle, or use ↑ ↓, to reorder how sections appear in your
-        PDF.
+        Drag ⠿ or use ↑ ↓ to reorder. Toggle a section to show/hide it in the
+        PDF without deleting it.
       </p>
       <ul className="rb-arrange-list">
-        {order.map((key, i) => (
-          <li
-            key={key}
-            className={`rb-arrange-item ${
-              dragIndex === i ? "rb-dragging" : ""
-            } ${overIndex === i && dragIndex !== i ? "rb-drop-target" : ""}`}
-            draggable
-            onDragStart={() => setDragIndex(i)}
-            onDragOver={(e) => {
-              e.preventDefault();
-              setOverIndex(i);
-            }}
-            onDrop={() => handleDrop(i)}
-            onDragEnd={() => {
-              setDragIndex(null);
-              setOverIndex(null);
-            }}
-          >
-            <span className="rb-grip" aria-hidden="true">
-              ⠿
-            </span>
-            <span className="rb-arrange-label">
-              {sectionLabel(key, customSections)}
-            </span>
-            <span className="rb-arrange-btns">
-              <button
-                type="button"
-                onClick={() => onMove(i, i - 1)}
-                disabled={i === 0}
-                aria-label="Move up"
-                title="Move up"
-              >
-                ↑
-              </button>
-              <button
-                type="button"
-                onClick={() => onMove(i, i + 1)}
-                disabled={i === order.length - 1}
-                aria-label="Move down"
-                title="Move down"
-              >
-                ↓
-              </button>
-            </span>
-          </li>
-        ))}
+        {order.map((key, i) => {
+          const off = hidden.has(key);
+          return (
+            <li
+              key={key}
+              className={`rb-arrange-item ${dragIndex === i ? "rb-dragging" : ""} ${
+                overIndex === i && dragIndex !== i ? "rb-drop-target" : ""
+              } ${off ? "rb-item-off" : ""}`}
+              draggable
+              onDragStart={() => setDragIndex(i)}
+              onDragOver={(e) => {
+                e.preventDefault();
+                setOverIndex(i);
+              }}
+              onDrop={() => handleDrop(i)}
+              onDragEnd={() => {
+                setDragIndex(null);
+                setOverIndex(null);
+              }}
+            >
+              <span className="rb-grip" aria-hidden="true">
+                ⠿
+              </span>
+              <span className="rb-arrange-label">
+                {sectionLabel(key, customSections)}
+              </span>
+              <ShowToggle checked={!off} onChange={() => onToggle(key)} />
+              <span className="rb-arrange-btns">
+                <button
+                  type="button"
+                  onClick={() => onMove(i, i - 1)}
+                  disabled={i === 0}
+                  aria-label="Move up"
+                  title="Move up"
+                >
+                  ↑
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onMove(i, i + 1)}
+                  disabled={i === order.length - 1}
+                  aria-label="Move down"
+                  title="Move down"
+                >
+                  ↓
+                </button>
+              </span>
+            </li>
+          );
+        })}
       </ul>
     </fieldset>
   );
@@ -766,6 +889,8 @@ function SectionArranger({ order, customSections, onMove }) {
 SectionArranger.propTypes = {
   order: PropTypes.arrayOf(PropTypes.string).isRequired,
   customSections: PropTypes.array,
+  disabledSections: PropTypes.array,
   onMove: PropTypes.func.isRequired,
+  onToggle: PropTypes.func.isRequired,
 };
 

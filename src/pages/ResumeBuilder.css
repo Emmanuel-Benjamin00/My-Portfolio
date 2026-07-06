@@ -343,6 +343,93 @@
   color: var(--text-muted);
 }
 
+/* ── Show/hide (disable) toggle ── */
+.rb-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.rb-show-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: #22c55e;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+.rb-show-toggle input {
+  width: 14px;
+  height: 14px;
+  accent-color: #22c55e;
+  cursor: pointer;
+}
+.rb-show-toggle.rb-show-off {
+  color: var(--text-dim);
+}
+.rb-item-off {
+  opacity: 0.5;
+}
+.rb-item-off:hover {
+  opacity: 0.75;
+}
+
+/* ── Collapsible cards ── */
+.rb-card-headrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.rb-card-header {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--accent);
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-align: left;
+}
+.rb-card-chevron {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  width: 12px;
+  flex-shrink: 0;
+}
+.rb-card-title {
+  flex: 1;
+}
+.rb-card-body {
+  margin-top: 16px;
+}
+.rb-card-custom .rb-card-header,
+.rb-card-notes .rb-card-header {
+  color: var(--text);
+}
+.rb-card-notes .rb-card-header {
+  color: var(--text-muted);
+}
+
+/* ── Private scratchpad ── */
+.rb-card-notes {
+  border-style: dashed;
+  background: var(--bg-elev-2);
+}
+.rb-card-notes legend {
+  color: var(--text-muted);
+}
+.rb-notes-hint {
+  margin: 0 0 12px;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+}
+
 /* ── Custom-section field configurator ── */
 .rb-req {
   color: #ef4444;

@@ -9,13 +9,11 @@ import {
 } from "@react-pdf/renderer";
 import { normalizeOrder } from "./resumeOrder";
 
-/* ── Jake's-Resume-style stylesheet (serif, small-caps sections, rules) ── */
+/* ── Resume stylesheet (Arial/Helvetica sans-serif, 0.5in margins) ── */
 const styles = StyleSheet.create({
   page: {
-    paddingTop: 30,
-    paddingBottom: 30,
-    paddingHorizontal: 40,
-    fontFamily: "Times-Roman",
+    padding: 36, // 0.5 inch on all four sides (72pt = 1in)
+    fontFamily: "Helvetica",
     fontSize: 10,
     color: "#000000",
     lineHeight: 1.25,
@@ -24,7 +22,7 @@ const styles = StyleSheet.create({
   /* Header */
   header: { marginBottom: 4 },
   name: {
-    fontFamily: "Times-Bold",
+    fontFamily: "Helvetica-Bold",
     fontSize: 22,
     textAlign: "center",
     letterSpacing: 1,
@@ -43,7 +41,7 @@ const styles = StyleSheet.create({
   /* Section heading with rule */
   section: { marginTop: 10 },
   sectionTitle: {
-    fontFamily: "Times-Bold",
+    fontFamily: "Helvetica-Bold",
     fontSize: 11,
     letterSpacing: 0.8,
     textTransform: "uppercase",
@@ -63,15 +61,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
-  entryTitle: { fontFamily: "Times-Bold", fontSize: 10.5 },
+  entryTitle: { fontFamily: "Helvetica-Bold", fontSize: 10.5 },
   entryRight: { fontSize: 10 },
   entrySubRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 1,
   },
-  entrySubLeft: { fontFamily: "Times-Italic", fontSize: 10 },
-  entrySubRight: { fontFamily: "Times-Italic", fontSize: 10 },
+  entrySubLeft: { fontFamily: "Helvetica-Oblique", fontSize: 10 },
+  entrySubRight: { fontFamily: "Helvetica-Oblique", fontSize: 10 },
 
   /* Bullets */
   bulletRow: { flexDirection: "row", marginTop: 2, paddingLeft: 8 },
@@ -80,11 +78,11 @@ const styles = StyleSheet.create({
 
   /* Skills / one-line rows */
   skillRow: { marginTop: 2, flexDirection: "row" },
-  skillLabel: { fontFamily: "Times-Bold", fontSize: 10 },
+  skillLabel: { fontFamily: "Helvetica-Bold", fontSize: 10 },
   skillValue: { fontSize: 10, flex: 1 },
 
   projectTitleRow: { flexDirection: "row" },
-  projectTech: { fontFamily: "Times-Italic", fontSize: 10 },
+  projectTech: { fontFamily: "Helvetica-Oblique", fontSize: 10 },
 
   /* Custom-field rendering */
   fieldRow: {
@@ -94,9 +92,9 @@ const styles = StyleSheet.create({
   },
   fieldText: { fontSize: 10 },
   fieldPara: { fontSize: 10, textAlign: "justify", marginTop: 1 },
-  fBold: { fontFamily: "Times-Bold" },
-  fItalic: { fontFamily: "Times-Italic" },
-  fNormal: { fontFamily: "Times-Roman" },
+  fBold: { fontFamily: "Helvetica-Bold" },
+  fItalic: { fontFamily: "Helvetica-Oblique" },
+  fNormal: { fontFamily: "Helvetica" },
 });
 
 const emphasisStyle = (f) =>
@@ -153,11 +151,20 @@ function ContactLine({ personal }) {
 
   const links = [];
   if (isFilled(personal.linkedin))
-    links.push({ text: personal.linkedin, href: normalizeUrl(personal.linkedin) });
+    links.push({
+      text: prettyUrl(personal.linkedin),
+      href: normalizeUrl(personal.linkedin),
+    });
   if (isFilled(personal.github))
-    links.push({ text: personal.github, href: normalizeUrl(personal.github) });
+    links.push({
+      text: prettyUrl(personal.github),
+      href: normalizeUrl(personal.github),
+    });
   if (isFilled(personal.website))
-    links.push({ text: personal.website, href: normalizeUrl(personal.website) });
+    links.push({
+      text: prettyUrl(personal.website),
+      href: normalizeUrl(personal.website),
+    });
 
   const renderRow = (items) =>
     items.map((it, i) => (
@@ -192,6 +199,16 @@ function normalizeUrl(u) {
   return `https://${s}`;
 }
 
+// Clean text shown for a link: drop protocol, "www.", and trailing slash,
+// so full pasted URLs still read tidily (e.g. "github.com/user").
+function prettyUrl(u) {
+  return String(u)
+    .trim()
+    .replace(/^https?:\/\//i, "")
+    .replace(/^www\./i, "")
+    .replace(/\/+$/, "");
+}
+
 function splitLines(text) {
   return String(text || "")
     .split("\n")
@@ -209,20 +226,31 @@ ResumePDF.propTypes = {
     education: PropTypes.array,
     certifications: PropTypes.array,
     customSections: PropTypes.array,
+    disabledSections: PropTypes.array,
   }).isRequired,
 };
+
+const enabled = (item) => !item || !item.disabled;
 
 export default function ResumePDF({ data }) {
   const {
     personal,
     summary,
-    skills,
-    experience,
-    projects,
-    education,
-    certifications,
+    skills: allSkills,
+    experience: allExperience,
+    projects: allProjects,
+    education: allEducation,
+    certifications: allCertifications,
     customSections = [],
+    disabledSections = [],
   } = data;
+
+  // Drop items the user has disabled before building any section.
+  const skills = (allSkills || []).filter(enabled);
+  const experience = (allExperience || []).filter(enabled);
+  const projects = (allProjects || []).filter(enabled);
+  const education = (allEducation || []).filter(enabled);
+  const certifications = (allCertifications || []).filter(enabled);
 
   // Build each section as a keyed node; render null when empty so ordering
   // never leaves blank headings behind.
@@ -328,14 +356,16 @@ export default function ResumePDF({ data }) {
       </View>
     ) : null,
 
-    certifications: certifications.filter(isFilled).length > 0 ? (
+    certifications: certifications.filter((c) => isFilled(c.text)).length > 0 ? (
       <View>
         <SectionHeading title="Certifications & Training" />
-        {certifications.filter(isFilled).map((c, i) => (
-          <View key={i} style={styles.skillRow}>
-            <Text style={styles.skillValue}>{c}</Text>
-          </View>
-        ))}
+        {certifications
+          .filter((c) => isFilled(c.text))
+          .map((c, i) => (
+            <View key={i} style={styles.skillRow}>
+              <Text style={styles.skillValue}>{c.text}</Text>
+            </View>
+          ))}
       </View>
     ) : null,
   };
@@ -347,6 +377,7 @@ export default function ResumePDF({ data }) {
   }
 
   const order = normalizeOrder(data);
+  const hidden = new Set(disabledSections);
 
   return (
     <Document title={personal.name || "Resume"} author={personal.name || ""}>
@@ -358,7 +389,9 @@ export default function ResumePDF({ data }) {
         </View>
 
         {order.map((key) =>
-          nodes[key] ? <View key={key}>{nodes[key]}</View> : null
+          !hidden.has(key) && nodes[key] ? (
+            <View key={key}>{nodes[key]}</View>
+          ) : null
         )}
       </Page>
     </Document>
@@ -370,9 +403,9 @@ export default function ResumePDF({ data }) {
  * classic "Company … Dates" line); paragraphs and bullet lists span full width. */
 function renderCustomSection(sec) {
   const fields = sec.fields || [];
-  const items = (sec.items || []).filter((it) =>
-    fields.some((f) => isFilled(it[f.id]))
-  );
+  const items = (sec.items || [])
+    .filter((it) => !it.disabled)
+    .filter((it) => fields.some((f) => isFilled(it[f.id])));
   if (!isFilled(sec.title) && !items.length) return null;
 
   return (

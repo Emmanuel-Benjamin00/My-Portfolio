@@ -1,6 +1,15 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
-import { Input, Textarea, Select, AddBtn, RemoveBtn } from "./formControls";
+import {
+  Input,
+  Textarea,
+  Select,
+  AddBtn,
+  RemoveBtn,
+  ShowToggle,
+  MoveButtons,
+  CollapsibleCard,
+} from "./formControls";
 import {
   FIELD_TYPES,
   ALIGN_OPTIONS,
@@ -48,6 +57,14 @@ export default function CustomSectionEditor({ section, onChange, onRemove }) {
   const removeItem = (idx) =>
     patch({ items: items.filter((_, i) => i !== idx) });
 
+  const moveItem = (from, to) => {
+    if (to < 0 || to >= items.length) return;
+    const next = [...items];
+    const [m] = next.splice(from, 1);
+    next.splice(to, 0, m);
+    patch({ items: next });
+  };
+
   const updateItem = (idx, fieldId, value) =>
     patch({
       items: items.map((it, i) =>
@@ -56,20 +73,17 @@ export default function CustomSectionEditor({ section, onChange, onRemove }) {
     });
 
   return (
-    <fieldset className="rb-card rb-card-custom">
-      <legend>{section.title.trim() || "Custom Section"}</legend>
-
-      <div className="rb-row">
-        <div className="rb-flex1">
-          <Input
-            label="Section heading"
-            value={section.title}
-            onChange={(v) => patch({ title: v })}
-            placeholder="Internships"
-          />
-        </div>
-        <RemoveBtn onClick={onRemove} />
-      </div>
+    <CollapsibleCard
+      className="rb-card-custom"
+      title={section.title.trim() || "Custom Section"}
+      headerExtra={<RemoveBtn onClick={onRemove} />}
+    >
+      <Input
+        label="Section heading"
+        value={section.title}
+        onChange={(v) => patch({ title: v })}
+        placeholder="Internships"
+      />
 
       {/* Field schema configurator */}
       <button
@@ -171,13 +185,28 @@ export default function CustomSectionEditor({ section, onChange, onRemove }) {
 
       {/* Entries — inputs generated from the field schema */}
       {items.map((item, idx) => (
-        <div className="rb-item" key={idx}>
+        <div
+          className={`rb-item ${item.disabled ? "rb-item-off" : ""}`}
+          key={idx}
+        >
           <div className="rb-item-head">
             <span>Entry {idx + 1}</span>
-            <RemoveBtn
-              onClick={() => removeItem(idx)}
-              disabled={items.length === 1}
-            />
+            <div className="rb-item-actions">
+              <MoveButtons
+                onUp={() => moveItem(idx, idx - 1)}
+                onDown={() => moveItem(idx, idx + 1)}
+                disableUp={idx === 0}
+                disableDown={idx === items.length - 1}
+              />
+              <ShowToggle
+                checked={!item.disabled}
+                onChange={(on) => updateItem(idx, "disabled", !on)}
+              />
+              <RemoveBtn
+                onClick={() => removeItem(idx)}
+                disabled={items.length === 1}
+              />
+            </div>
           </div>
           {fields.map((f) =>
             f.type === "text" ? (
@@ -208,7 +237,7 @@ export default function CustomSectionEditor({ section, onChange, onRemove }) {
         </div>
       ))}
       <AddBtn label="Add entry" onClick={addItem} />
-    </fieldset>
+    </CollapsibleCard>
   );
 }
 
