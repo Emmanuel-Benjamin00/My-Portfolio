@@ -270,16 +270,18 @@ export default function ResumePDF({ data }) {
         <SectionHeading title="Technical Skills" />
         {skills
           .filter((s) => isFilled(s.value))
-          .map((s, i) => (
-            <View key={i} style={styles.skillRow}>
-              <Text style={styles.skillValue}>
-                {isFilled(s.label) && (
+          .map((s, i) =>
+            isFilled(s.label) ? (
+              <View key={i} style={styles.skillRow}>
+                <Text style={styles.skillValue}>
                   <Text style={styles.skillLabel}>{s.label}: </Text>
-                )}
-                {s.value}
-              </Text>
-            </View>
-          ))}
+                  {s.value}
+                </Text>
+              </View>
+            ) : (
+              <Bullet key={i}>{s.value}</Bullet>
+            )
+          )}
       </View>
     ) : null,
 
