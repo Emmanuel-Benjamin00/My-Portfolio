@@ -6,8 +6,13 @@ import {
   View,
   Link,
   StyleSheet,
+  Font,
 } from "@react-pdf/renderer";
 import { normalizeOrder } from "./resumeOrder";
+
+// Disable hyphenation so long words wrap whole to the next line instead of
+// being broken with a hyphen; justified text then spreads them evenly.
+Font.registerHyphenationCallback((word) => [word]);
 
 /* ── Resume stylesheet (Arial/Helvetica sans-serif, 0.5in margins) ── */
 const styles = StyleSheet.create({
@@ -35,7 +40,7 @@ const styles = StyleSheet.create({
     lineHeight: 1.4,
     color: "#000000",
   },
-  link: { color: "#000000", textDecoration: "underline" },
+  link: { color: "#000000", textDecoration: "none" },
   sep: { color: "#000000" },
 
   /* Section heading with rule */
@@ -120,8 +125,10 @@ const personalShape = PropTypes.shape({
 });
 
 function Bullet({ children }) {
+  // wrap={false}: keep the dot and its text together — a bullet moves to the
+  // next page as a unit instead of leaving an empty "•" at the page bottom.
   return (
-    <View style={styles.bulletRow}>
+    <View style={styles.bulletRow} wrap={false}>
       <Text style={styles.bulletDot}>{"•"}</Text>
       <Text style={styles.bulletText}>{children}</Text>
     </View>
