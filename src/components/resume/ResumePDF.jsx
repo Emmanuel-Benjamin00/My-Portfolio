@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
   },
   contactLine: {
     textAlign: "center",
-    fontSize: 9.5,
+    fontSize: 9,
     lineHeight: 1.4,
     color: "#000000",
   },
@@ -151,54 +151,50 @@ Bullet.propTypes = { children: PropTypes.node };
 SectionHeading.propTypes = { title: PropTypes.string.isRequired };
 ContactLine.propTypes = { personal: personalShape.isRequired };
 
-/* Build the contact line from whatever fields are present */
+/* Build a single flowing contact line from whatever fields are present.
+ * Everything lives in one centered paragraph so items fill the width and
+ * only wrap to a second line when they genuinely run out of room (instead
+ * of forcing the links onto their own line while the first line has space).
+ * Order: email → phone → location → linkedin → github → website. */
 function ContactLine({ personal }) {
-  const parts = [];
-  if (isFilled(personal.location)) parts.push({ text: personal.location });
-  if (isFilled(personal.phone)) parts.push({ text: personal.phone });
+  const items = [];
   if (isFilled(personal.email))
-    parts.push({ text: personal.email, href: `mailto:${personal.email}` });
-
-  const links = [];
+    items.push({ text: personal.email, href: `mailto:${personal.email}` });
+  if (isFilled(personal.phone)) items.push({ text: personal.phone });
+  if (isFilled(personal.location)) items.push({ text: personal.location });
   if (isFilled(personal.linkedin))
-    links.push({
+    items.push({
       text: prettyUrl(personal.linkedin),
       href: normalizeUrl(personal.linkedin),
     });
   if (isFilled(personal.github))
-    links.push({
+    items.push({
       text: prettyUrl(personal.github),
       href: normalizeUrl(personal.github),
     });
   if (isFilled(personal.website))
-    links.push({
+    items.push({
       text: prettyUrl(personal.website),
       href: normalizeUrl(personal.website),
     });
 
-  const renderRow = (items) =>
-    items.map((it, i) => (
-      <Text key={i}>
-        {i > 0 ? <Text style={styles.sep}>{"  |  "}</Text> : null}
-        {it.href ? (
-          <Link src={it.href} style={styles.link}>
-            {it.text}
-          </Link>
-        ) : (
-          <Text>{it.text}</Text>
-        )}
-      </Text>
-    ));
+  if (!items.length) return null;
 
   return (
-    <>
-      {parts.length > 0 && (
-        <Text style={styles.contactLine}>{renderRow(parts)}</Text>
-      )}
-      {links.length > 0 && (
-        <Text style={styles.contactLine}>{renderRow(links)}</Text>
-      )}
-    </>
+    <Text style={styles.contactLine}>
+      {items.map((it, i) => (
+        <Text key={i}>
+          {i > 0 ? <Text style={styles.sep}>{"  |  "}</Text> : null}
+          {it.href ? (
+            <Link src={it.href} style={styles.link}>
+              {it.text}
+            </Link>
+          ) : (
+            <Text>{it.text}</Text>
+          )}
+        </Text>
+      ))}
+    </Text>
   );
 }
 
