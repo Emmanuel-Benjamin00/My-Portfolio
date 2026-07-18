@@ -4,7 +4,7 @@ import { useResumeAccess } from "./ResumeAccessContext";
 // The secret unlock code. Type these keys in order (case-insensitive)
 // while on the About page to reveal the hidden Resume tab.
 // Change this to anything only you know.
-const SECRET = "secretresume";
+const SECRET = "secret@2000";
 
 // Mobile fallback: tap the "About me" label this many times in a row
 // (with no long pause between taps) to reveal the hidden Resume tab.
