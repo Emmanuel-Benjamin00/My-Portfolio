@@ -1,7 +1,7 @@
 .rb-wrap {
-  max-width: 1400px;
+  max-width: 1800px;
   margin: 0 auto;
-  padding: 100px 24px 80px;
+  padding: 100px 32px 80px;
   color: var(--text);
 }
 
@@ -54,30 +54,260 @@
   color: #fff;
 }
 
-/* ── Resume switcher (one document per company) ── */
-.rb-switcher {
-  max-width: 900px;
-  margin: 0 auto 18px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--border);
-}
-.rb-switcher-row {
+/* ── Shell: resume sidebar + main editor ── */
+.rb-shell {
   display: flex;
-  align-items: flex-end;
-  flex-wrap: wrap;
-  gap: 10px;
+  align-items: flex-start;
+  gap: 24px;
 }
-.rb-switcher-field {
+.rb-main {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Resume sidebar (one document per company) ── */
+.rb-sidebar {
+  flex: 0 0 260px;
+  width: 260px;
+  position: sticky;
+  top: 16px;
+  align-self: flex-start;
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  border-radius: 14px;
+  padding: 14px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+}
+.rb-sidebar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.rb-sidebar-title {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.rb-sidebar-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.rb-sidebar-collapse {
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.rb-sidebar-collapse:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Collapsed rail */
+.rb-sidebar-collapsed {
+  flex: 0 0 auto;
+  width: auto;
+  padding: 8px;
+}
+.rb-sidebar-expand {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  flex: 1;
-  min-width: 200px;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 6px 2px;
+  font-size: 1.2rem;
 }
-.rb-switcher-label {
-  font-size: 0.78rem;
+.rb-sidebar-expand:hover {
+  color: var(--accent);
+}
+.rb-sidebar-expand-label {
+  writing-mode: vertical-rl;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.rb-sidebar-expand-count {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--accent);
+  border-radius: 999px;
+  min-width: 18px;
+  padding: 1px 5px;
+  text-align: center;
+}
+.rb-sidebar-name {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.rb-sidebar-name .rb-switcher-select {
+  width: 100%;
+  font-weight: 500;
+}
+.rb-sidebar-name-actions {
+  display: flex;
+  gap: 8px;
+}
+.rb-sidebar-name-actions .rb-btn {
+  flex: 1;
+}
+.rb-sidebar-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.rb-sidebar-item {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+}
+.rb-sidebar-item-active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+.rb-sidebar-item-row {
+  display: flex;
+  align-items: stretch;
+}
+.rb-sidebar-item-btn {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  border: none;
+  background: transparent;
+  padding: 10px 12px;
+  cursor: pointer;
+  text-align: left;
+}
+.rb-sidebar-item-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  min-width: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.rb-sidebar-item-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rb-sidebar-item-active .rb-sidebar-item-name {
+  color: var(--accent);
+}
+.rb-sidebar-star {
+  color: #16a34a;
+  flex: none;
+}
+.rb-sidebar-badge {
+  font-size: 0.72rem;
   font-weight: 600;
   color: var(--text-muted);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+.rb-sidebar-badge-ready {
+  color: #16a34a;
+  border-color: #16a34a;
+  background: rgba(22, 163, 74, 0.1);
+}
+.rb-sidebar-opt {
+  flex: none;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  padding: 0 12px;
+  margin: 6px 6px 6px 0;
+  border-radius: 8px;
+  font-size: 1.15rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.rb-sidebar-opt:hover,
+.rb-sidebar-opt-on {
+  background: var(--bg-elev-2);
+  color: var(--text);
+}
+
+/* Inline options menu (no clipped popup) */
+.rb-sidebar-menu {
+  padding: 0 8px 8px;
+}
+.rb-sidebar-menu-del {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.06);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #ef4444;
+  cursor: pointer;
+}
+.rb-sidebar-menu-del:hover {
+  background: rgba(239, 68, 68, 0.12);
+}
+.rb-sidebar-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px 12px;
+  border-top: 1px solid rgba(239, 68, 68, 0.4);
+}
+.rb-sidebar-confirm-text {
+  font-size: 0.8rem;
+  color: var(--text);
+}
+.rb-sidebar-confirm-actions {
+  display: flex;
+  gap: 8px;
+}
+.rb-sidebar-confirm-actions .rb-btn,
+.rb-sidebar-confirm-actions .rb-switcher-del-confirm {
+  flex: 1;
+}
+
+@media (max-width: 900px) {
+  .rb-shell {
+    flex-direction: column;
+  }
+  .rb-sidebar {
+    position: static;
+    width: 100%;
+    flex-basis: auto;
+    max-height: none;
+  }
 }
 .rb-switcher-select {
   padding: 9px 12px;
@@ -109,43 +339,6 @@
   border-color: var(--accent);
   background: var(--accent-soft);
 }
-.rb-switcher-del {
-  border: 1px solid var(--border-strong);
-  background: transparent;
-  border-radius: 8px;
-  padding: 9px 14px;
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  cursor: pointer;
-  white-space: nowrap;
-}
-.rb-switcher-del:hover {
-  border-color: #ef4444;
-  color: #ef4444;
-}
-.rb-switcher-confirm {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 12px;
-  padding: 12px 14px;
-  border: 1px solid #ef4444;
-  border-radius: 10px;
-  background: rgba(239, 68, 68, 0.08);
-}
-.rb-switcher-confirm-text {
-  font-size: 0.88rem;
-  color: var(--text);
-  flex: 1;
-  min-width: 200px;
-}
-.rb-switcher-confirm-actions {
-  display: flex;
-  gap: 8px;
-}
 .rb-switcher-del-confirm {
   border: none;
   border-radius: 8px;
@@ -169,6 +362,49 @@
   margin: 6px 0 0;
   font-size: 0.8rem;
   color: #ef4444;
+}
+
+/* ── "Ready for this company" mark ── */
+.rb-ready {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+.rb-ready-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.rb-ready-toggle:hover {
+  border-color: #16a34a;
+  color: #16a34a;
+}
+.rb-ready-mark {
+  font-size: 1rem;
+  line-height: 1;
+}
+.rb-ready-on {
+  border-color: #16a34a;
+  color: #16a34a;
+  background: rgba(22, 163, 74, 0.1);
+}
+.rb-ready-status {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.rb-ready-status-on {
+  color: #16a34a;
 }
 
 /* ── "Fill from last resume" prompt on a blank resume ── */

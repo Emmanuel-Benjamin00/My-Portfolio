@@ -147,6 +147,8 @@ function makeResume(fields, label = "", createdAt) {
     id: fields.id || genResumeId(),
     label: fields.label || label || "",
     createdAt: fields.createdAt || createdAt || Date.now(),
+    // Marked "ready" = perfected for its company; unmarked = still ongoing.
+    ready: Boolean(fields.ready),
   };
 }
 
@@ -188,6 +190,12 @@ function isBlankResume(r) {
   if ((r.customSections || []).length) return false;
   if (r.notes && r.notes.trim()) return false;
   return true;
+}
+
+// A just-created resume the user never touched at all — not even named. These
+// are dropped when you navigate away instead of lingering as empty documents.
+function isDiscardable(r) {
+  return Boolean(r && !(r.label || "").trim() && isBlankResume(r));
 }
 
 function hydrateStore(raw) {
@@ -326,20 +334,40 @@ export default function ResumeBuilder() {
   };
 
   /* ── Multiple resumes (one per company) ── */
-  const addResume = () =>
+  // A name is required up front, so a new resume is always created titled.
+  const addResume = (label) =>
     setStore((s) => {
-      const r = blankResume("");
-      return { ...s, resumes: [...s.resumes, r], activeId: r.id };
+      const name = (label || "").trim();
+      if (!name) return s;
+      // Drop the current resume if it's an untouched blank we'd be leaving.
+      const active = s.resumes.find((r) => r.id === s.activeId);
+      const base = isDiscardable(active)
+        ? s.resumes.filter((r) => r.id !== s.activeId)
+        : s.resumes;
+      const r = blankResume(name);
+      return { ...s, resumes: [...base, r], activeId: r.id };
     });
 
   const switchResume = (id) =>
-    setStore((s) => ({ ...s, activeId: id }));
+    setStore((s) => {
+      if (id === s.activeId) return s;
+      // Leaving an untouched blank resume discards it rather than saving it.
+      const active = s.resumes.find((r) => r.id === s.activeId);
+      const resumes =
+        isDiscardable(active) && s.resumes.length > 1
+          ? s.resumes.filter((r) => r.id !== s.activeId)
+          : s.resumes;
+      return { ...s, resumes, activeId: id };
+    });
 
   const setResumeLabel = (id, label) =>
     setStore((s) => ({
       ...s,
       resumes: s.resumes.map((r) => (r.id === id ? { ...r, label } : r)),
     }));
+
+  // Toggle the "ready for this company" mark on the active resume.
+  const toggleReady = () => setData((r) => ({ ...r, ready: !r.ready }));
 
   // Confirmation is handled by the switcher's two-step UI, so this just applies.
   const removeResume = (id) =>
@@ -618,9 +646,9 @@ export default function ResumeBuilder() {
       {view === "admin" && isAdmin(user) ? (
         <AdminPanel />
       ) : (
-        <>
+        <div className="rb-shell">
           {/* ── One resume per company; switch, add or delete ── */}
-          <ResumeSwitcher
+          <ResumeSidebar
             resumes={store.resumes}
             activeId={store.activeId}
             onSwitch={switchResume}
@@ -628,8 +656,9 @@ export default function ResumeBuilder() {
             onRemove={removeResume}
           />
 
-          <div className={`rb-layout ${showPreview ? "rb-layout-split" : ""}`}>
-            <form className="rb-form" onBlur={persist} onSubmit={(e) => e.preventDefault()}>
+          <div className="rb-main">
+            <div className={`rb-layout ${showPreview ? "rb-layout-split" : ""}`}>
+              <form className="rb-form" onBlur={persist} onSubmit={(e) => e.preventDefault()}>
           {/* ── This resume's name (company / target role) — required ── */}
           <div className="rb-card rb-resume-meta">
             <Input
@@ -645,6 +674,31 @@ export default function ResumeBuilder() {
                 can’t be blank when you generate the PDF.
               </p>
             )}
+
+            {/* Mark this resume as ready (perfected) for its company. */}
+            <div className="rb-ready">
+              <button
+                type="button"
+                className={`rb-ready-toggle ${data.ready ? "rb-ready-on" : ""}`}
+                onClick={toggleReady}
+                aria-pressed={data.ready}
+                title={
+                  data.ready
+                    ? "Marked ready — click to set back to ongoing"
+                    : "Mark this resume as ready for its company"
+                }
+              >
+                <span className="rb-ready-mark" aria-hidden="true">
+                  {data.ready ? "★" : "☆"}
+                </span>
+                {data.ready ? "Ready for this company" : "Mark as ready"}
+              </button>
+              <span
+                className={`rb-ready-status ${data.ready ? "rb-ready-status-on" : ""}`}
+              >
+                {data.ready ? "Status: Ready" : "Status: Ongoing"}
+              </span>
+            </div>
           </div>
 
           {/* ── Offer to copy from any existing resume ── */}
@@ -1068,15 +1122,16 @@ export default function ResumeBuilder() {
           </CollapsibleCard>
         </form>
 
-            {showPreview && (
-              <div className="rb-preview">
-                <PDFViewer className="rb-pdf-viewer" showToolbar={false}>
-                  <ResumePDF data={data} />
-                </PDFViewer>
-              </div>
-            )}
+              {showPreview && (
+                <div className="rb-preview">
+                  <PDFViewer className="rb-pdf-viewer" showToolbar={false}>
+                    <ResumePDF data={data} />
+                  </PDFViewer>
+                </div>
+              )}
+            </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
@@ -1195,84 +1250,222 @@ Range.propTypes = {
   onChange: PropTypes.func.isRequired,
 };
 
-/* ── Resume switcher: pick the resume to edit from a dropdown ── */
-function ResumeSwitcher({ resumes, activeId, onSwitch, onAdd, onRemove }) {
-  const [confirming, setConfirming] = useState(false);
-  const active = resumes.find((r) => r.id === activeId) || resumes[0];
-  const activeName = (active && active.label && active.label.trim()) ||
-    "Untitled resume";
+/* ── Resume sidebar: list every resume, switch, add, mark & delete ── */
+function ResumeSidebar({ resumes, activeId, onSwitch, onAdd, onRemove }) {
+  const [collapsed, setCollapsed] = useState(false);
+  const [naming, setNaming] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [menuId, setMenuId] = useState(null); // row whose options menu is open
+  const [confirmId, setConfirmId] = useState(null); // row awaiting delete confirm
 
-  // Drop the delete prompt whenever the selected resume changes.
-  useEffect(() => setConfirming(false), [activeId]);
+  // Close any open options menu when the selected resume changes.
+  useEffect(() => setMenuId(null), [activeId]);
 
-  return (
-    <div className="rb-switcher">
-      <div className="rb-switcher-row">
-        <label className="rb-switcher-field">
-          <span className="rb-switcher-label">Editing resume</span>
-          <select
-            className="rb-switcher-select"
-            value={activeId}
-            onChange={(e) => onSwitch(e.target.value)}
-          >
-            {resumes.map((r) => (
-              <option key={r.id} value={r.id}>
-                {(r.label && r.label.trim()) || "Untitled resume"}
-              </option>
-            ))}
-          </select>
-        </label>
+  // A name is mandatory — only create once one is entered.
+  const submitName = () => {
+    if (!newName.trim()) return;
+    onAdd(newName.trim());
+    setNaming(false);
+    setNewName("");
+  };
+
+  const cancelName = () => {
+    setNaming(false);
+    setNewName("");
+  };
+
+  if (collapsed) {
+    return (
+      <aside className="rb-sidebar rb-sidebar-collapsed">
         <button
           type="button"
-          className="rb-tab-add"
-          onClick={onAdd}
-          title="Create a new resume for another company"
+          className="rb-sidebar-expand"
+          onClick={() => setCollapsed(false)}
+          title="Show resumes"
         >
-          <span aria-hidden="true">＋</span> New resume
+          <span aria-hidden="true">☰</span>
+          <span className="rb-sidebar-expand-label">Resumes</span>
+          <span className="rb-sidebar-expand-count">{resumes.length}</span>
         </button>
-        {resumes.length > 1 && !confirming && (
+      </aside>
+    );
+  }
+
+  return (
+    <aside className="rb-sidebar">
+      <div className="rb-sidebar-head">
+        <h2 className="rb-sidebar-title">Resumes</h2>
+        <div className="rb-sidebar-head-actions">
+          {!naming && (
+            <button
+              type="button"
+              className="rb-tab-add"
+              onClick={() => {
+                setMenuId(null);
+                setConfirmId(null);
+                setNaming(true);
+              }}
+              title="Create a new resume for another company"
+            >
+              <span aria-hidden="true">＋</span> New
+            </button>
+          )}
           <button
             type="button"
-            className="rb-switcher-del"
-            onClick={() => setConfirming(true)}
+            className="rb-sidebar-collapse"
+            onClick={() => setCollapsed(true)}
+            title="Hide sidebar"
+            aria-label="Hide sidebar"
           >
-            Delete…
+            <span aria-hidden="true">⟨</span>
           </button>
-        )}
+        </div>
       </div>
 
-      {/* Deliberate two-step delete so it can't be hit by accident. */}
-      {confirming && (
-        <div className="rb-switcher-confirm">
-          <span className="rb-switcher-confirm-text">
-            Delete “{activeName}” permanently? This can’t be undone.
-          </span>
-          <div className="rb-switcher-confirm-actions">
+      {/* Naming a new resume — name is required before it's created. */}
+      {naming && (
+        <div className="rb-sidebar-name">
+          <input
+            className="rb-switcher-select"
+            autoFocus
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                submitName();
+              } else if (e.key === "Escape") {
+                cancelName();
+              }
+            }}
+            placeholder="Company / role name"
+          />
+          <div className="rb-sidebar-name-actions">
             <button
               type="button"
               className="rb-btn rb-btn-ghost"
-              onClick={() => setConfirming(false)}
+              onClick={cancelName}
             >
               Cancel
             </button>
             <button
               type="button"
-              className="rb-switcher-del-confirm"
-              onClick={() => {
-                onRemove(activeId);
-                setConfirming(false);
-              }}
+              className="rb-btn rb-btn-primary"
+              onClick={submitName}
+              disabled={!newName.trim()}
             >
-              Delete permanently
+              Create
             </button>
           </div>
         </div>
       )}
-    </div>
+
+      <ul className="rb-sidebar-list">
+        {resumes.map((r) => {
+          const name = (r.label && r.label.trim()) || "Untitled resume";
+          const isActive = r.id === activeId;
+          const menuOpen = menuId === r.id;
+          const confirming = confirmId === r.id;
+          return (
+            <li
+              key={r.id}
+              className={`rb-sidebar-item ${
+                isActive ? "rb-sidebar-item-active" : ""
+              }`}
+            >
+              <div className="rb-sidebar-item-row">
+                <button
+                  type="button"
+                  className="rb-sidebar-item-btn"
+                  onClick={() => onSwitch(r.id)}
+                  title={name}
+                >
+                  <span className="rb-sidebar-item-name">
+                    {r.ready && (
+                      <span className="rb-sidebar-star" aria-hidden="true">
+                        ★
+                      </span>
+                    )}
+                    <span className="rb-sidebar-item-label">{name}</span>
+                  </span>
+                  <span
+                    className={`rb-sidebar-badge ${
+                      r.ready ? "rb-sidebar-badge-ready" : ""
+                    }`}
+                  >
+                    {r.ready ? "Ready" : "Ongoing"}
+                  </span>
+                </button>
+
+                {resumes.length > 1 && (
+                  <button
+                    type="button"
+                    className={`rb-sidebar-opt ${menuOpen ? "rb-sidebar-opt-on" : ""}`}
+                    onClick={() =>
+                      setMenuId((cur) => (cur === r.id ? null : r.id))
+                    }
+                    aria-haspopup="true"
+                    aria-expanded={menuOpen}
+                    title="Options"
+                  >
+                    <span aria-hidden="true">⋯</span>
+                  </button>
+                )}
+              </div>
+
+              {/* Inline options — no clipped popup. */}
+              {menuOpen && (
+                <div className="rb-sidebar-menu" role="menu">
+                  <button
+                    type="button"
+                    role="menuitem"
+                    className="rb-sidebar-menu-del"
+                    onClick={() => {
+                      setMenuId(null);
+                      setConfirmId(r.id);
+                    }}
+                  >
+                    <span aria-hidden="true">🗑</span> Delete resume
+                  </button>
+                </div>
+              )}
+
+              {/* Deliberate two-step delete so it can't be hit by accident. */}
+              {confirming && (
+                <div className="rb-sidebar-confirm">
+                  <span className="rb-sidebar-confirm-text">
+                    Delete “{name}” permanently? This can’t be undone.
+                  </span>
+                  <div className="rb-sidebar-confirm-actions">
+                    <button
+                      type="button"
+                      className="rb-btn rb-btn-ghost"
+                      onClick={() => setConfirmId(null)}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      className="rb-switcher-del-confirm"
+                      onClick={() => {
+                        onRemove(r.id);
+                        setConfirmId(null);
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </aside>
   );
 }
 
-ResumeSwitcher.propTypes = {
+ResumeSidebar.propTypes = {
   resumes: PropTypes.array.isRequired,
   activeId: PropTypes.string,
   onSwitch: PropTypes.func.isRequired,
@@ -1308,6 +1501,7 @@ function CopyFromPicker({ sources, onCopy }) {
         >
           {sources.map((r) => (
             <option key={r.id} value={r.id}>
+              {r.ready ? "★ " : ""}
               {(r.label && r.label.trim()) || "Untitled resume"}
             </option>
           ))}
