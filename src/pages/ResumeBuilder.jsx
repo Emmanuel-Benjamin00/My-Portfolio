@@ -31,8 +31,10 @@ import {
   CollapsibleCard,
 } from "../components/resume/formControls";
 import CustomSectionEditor from "../components/resume/CustomSectionEditor";
+import AdminPanel from "../components/resume/AdminPanel";
 import {
   isConfigured as cloudEnabled,
+  isAdmin,
   onAuthStateChanged,
   signInWithGoogle,
   signOut,
@@ -165,7 +167,7 @@ export default function ResumeBuilder() {
     clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(async () => {
       try {
-        await saveResume(user.uid, data);
+        await saveResume(user, data);
         setSyncState("saved");
       } catch (err) {
         console.error(err);
@@ -379,6 +381,8 @@ export default function ResumeBuilder() {
           </button>
         </div>
       </header>
+
+      {isAdmin(user) && <AdminPanel />}
 
       <div className={`rb-layout ${showPreview ? "rb-layout-split" : ""}`}>
         <form className="rb-form" onBlur={persist} onSubmit={(e) => e.preventDefault()}>

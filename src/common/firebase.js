@@ -22,7 +22,14 @@ import {
   signOut as fbSignOut,
   onAuthStateChanged as fbOnAuthStateChanged,
 } from "firebase/auth";
-import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  collection,
+  getDocs,
+} from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -37,8 +44,12 @@ export const isConfigured = Boolean(
   firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.appId
 );
 
-// Only this account may upload / replace the public resume file.
+// Only this account may upload / replace the public resume file AND view the
+// admin list of everyone's resumes. No other account is ever an admin.
 export const OWNER_EMAIL = "emmanuel26112000@gmail.com";
+
+// True only for the single admin account above.
+export const isAdmin = (user) => Boolean(user && user.email === OWNER_EMAIL);
 
 let auth = null;
 let db = null;
@@ -82,12 +93,36 @@ export async function loadResume(uid) {
   return snap.exists() ? snap.data().data : null;
 }
 
-export async function saveResume(uid, data) {
-  if (!db || !uid) return;
-  await setDoc(doc(db, "resumes", uid), {
+export async function saveResume(user, data) {
+  if (!db || !user?.uid) return;
+  // Store the signed-in identity alongside the resume so the admin view can
+  // show WHO each resume belongs to (not just what's typed inside it).
+  await setDoc(doc(db, "resumes", user.uid), {
     data,
+    email: user.email || "",
+    displayName: user.displayName || "",
     updatedAt: new Date().toISOString(),
   });
+}
+
+// Admin-only: read every user's resume. Requires the Firestore rule that
+// grants read access to the OWNER_EMAIL account (see the module header notes).
+// Returns [{ uid, email, displayName, updatedAt, data }], newest first.
+export async function listResumes() {
+  if (!db) return [];
+  const snap = await getDocs(collection(db, "resumes"));
+  return snap.docs
+    .map((d) => {
+      const v = d.data() || {};
+      return {
+        uid: d.id,
+        email: v.email || v.data?.personal?.email || "",
+        displayName: v.displayName || v.data?.personal?.name || "",
+        updatedAt: v.updatedAt || "",
+        data: v.data || null,
+      };
+    })
+    .sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || ""));
 }
 
 /* ── Public resume file (owner uploads, everyone can view) ──
