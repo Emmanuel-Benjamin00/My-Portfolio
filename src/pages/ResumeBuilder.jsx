@@ -4,6 +4,11 @@ import { pdf, PDFViewer } from "@react-pdf/renderer";
 import { toast } from "react-toastify";
 import ResumePDF from "../components/resume/ResumePDF";
 import {
+  DEFAULT_SETTINGS,
+  LAYOUT_PRESETS,
+  withSettingsDefaults,
+} from "../components/resume/resumeSettings";
+import {
   BUILTIN_SECTIONS,
   genSectionId,
   normalizeOrder,
@@ -18,6 +23,7 @@ import {
 import {
   Input,
   Textarea,
+  Select,
   AddBtn,
   RemoveBtn,
   ShowToggle,
@@ -76,6 +82,7 @@ const initialData = {
   customSections: [],
   sectionOrder: [...BUILTIN_SECTIONS],
   disabledSections: [], // section keys hidden from the PDF
+  settings: { ...DEFAULT_SETTINGS }, // PDF layout: margins, fonts, spacing
   notes: "", // private scratchpad — never rendered into the PDF
 };
 
@@ -89,6 +96,9 @@ function hydrate(raw) {
     typeof c === "string" ? { text: c, disabled: false } : c
   );
   if (!Array.isArray(data.disabledSections)) data.disabledSections = [];
+  // Nested settings need their own merge — the top-level spread is shallow, so
+  // a saved resume missing newer keys would otherwise arrive incomplete.
+  data.settings = withSettingsDefaults(data.settings);
   return data;
 }
 
@@ -185,6 +195,23 @@ export default function ResumeBuilder() {
 
   const setField = (field, value) =>
     setData((d) => ({ ...d, [field]: value }));
+
+  /* ── PDF layout settings ── */
+  const setSetting = (key, value) =>
+    setData((d) => ({
+      ...d,
+      settings: { ...withSettingsDefaults(d.settings), [key]: value },
+    }));
+
+  // Apply a named preset (keeps the current page size, which is separate).
+  const applyPreset = (name) =>
+    setData((d) => ({
+      ...d,
+      settings: {
+        ...withSettingsDefaults(d.settings),
+        ...(LAYOUT_PRESETS[name] || {}),
+      },
+    }));
 
   const setListItem = (list, index, field, value) =>
     setData((d) => {
@@ -362,6 +389,13 @@ export default function ResumeBuilder() {
             disabledSections={data.disabledSections}
             onMove={moveSection}
             onToggle={toggleSection}
+          />
+
+          {/* ── Layout & Spacing (fit to one page) ── */}
+          <LayoutPanel
+            settings={withSettingsDefaults(data.settings)}
+            onChange={setSetting}
+            onPreset={applyPreset}
           />
 
           {/* ── Personal ── */}
@@ -732,6 +766,119 @@ export default function ResumeBuilder() {
     </div>
   );
 }
+
+/* ── Layout & Spacing panel — tune margins/fonts/gaps to fit one page ── */
+const PRESET_BUTTONS = [
+  { key: "normal", label: "Normal", hint: "Roomy default" },
+  { key: "compact", label: "Compact", hint: "Fits more" },
+  { key: "ultra", label: "Ultra", hint: "Tightest" },
+];
+
+const PAGE_SIZE_OPTIONS = [
+  { value: "A4", label: "A4" },
+  { value: "LETTER", label: "US Letter" },
+];
+
+// step controls the slider granularity; some knobs move in half-points.
+const SLIDERS = [
+  { key: "margin", label: "Page margin", min: 20, max: 48, step: 1, unit: "pt" },
+  { key: "fontSize", label: "Body font size", min: 8.5, max: 11.5, step: 0.5, unit: "pt" },
+  { key: "lineHeight", label: "Line height", min: 1.1, max: 1.5, step: 0.05, unit: "" },
+  { key: "sectionGap", label: "Section spacing", min: 6, max: 20, step: 1, unit: "pt" },
+  { key: "entryGap", label: "Entry spacing", min: 3, max: 14, step: 1, unit: "pt" },
+  { key: "nameSize", label: "Name size", min: 16, max: 28, step: 1, unit: "pt" },
+];
+
+function LayoutPanel({ settings, onChange, onPreset }) {
+  return (
+    <CollapsibleCard title="Layout & Spacing" defaultOpen={false}>
+      <p className="rb-layout-hint">
+        Fit your resume onto one page by tightening spacing and fonts — no need
+        to cut content. Start with a preset, then fine-tune.
+      </p>
+
+      <div className="rb-preset-row">
+        {PRESET_BUTTONS.map((p) => (
+          <button
+            key={p.key}
+            type="button"
+            className="rb-preset-btn"
+            onClick={() => onPreset(p.key)}
+            title={p.hint}
+          >
+            <span className="rb-preset-label">{p.label}</span>
+            <span className="rb-preset-hint">{p.hint}</span>
+          </button>
+        ))}
+      </div>
+
+      <div className="rb-field rb-pagesize">
+        <Select
+          label="Page size"
+          value={settings.pageSize}
+          onChange={(v) => onChange("pageSize", v)}
+          options={PAGE_SIZE_OPTIONS}
+        />
+      </div>
+
+      <div className="rb-slider-grid">
+        {SLIDERS.map((s) => (
+          <Range
+            key={s.key}
+            label={s.label}
+            value={settings[s.key]}
+            min={s.min}
+            max={s.max}
+            step={s.step}
+            unit={s.unit}
+            onChange={(v) => onChange(s.key, v)}
+          />
+        ))}
+      </div>
+    </CollapsibleCard>
+  );
+}
+
+LayoutPanel.propTypes = {
+  settings: PropTypes.object.isRequired,
+  onChange: PropTypes.func.isRequired,
+  onPreset: PropTypes.func.isRequired,
+};
+
+/* Labeled range slider with a live numeric readout. */
+function Range({ label, value, min, max, step, unit, onChange }) {
+  const display = Number.isInteger(value) ? value : Number(value.toFixed(2));
+  return (
+    <label className="rb-range">
+      <span className="rb-range-head">
+        <span className="rb-label">{label}</span>
+        <span className="rb-range-value">
+          {display}
+          {unit}
+        </span>
+      </span>
+      <input
+        type="range"
+        className="rb-range-input"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+      />
+    </label>
+  );
+}
+
+Range.propTypes = {
+  label: PropTypes.string.isRequired,
+  value: PropTypes.number.isRequired,
+  min: PropTypes.number.isRequired,
+  max: PropTypes.number.isRequired,
+  step: PropTypes.number.isRequired,
+  unit: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+};
 
 /* ── Cloud sync status bar ── */
 const SYNC_LABEL = {

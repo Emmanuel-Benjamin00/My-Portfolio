@@ -1,4 +1,5 @@
 import PropTypes from "prop-types";
+import { createContext, useContext } from "react";
 import {
   Document,
   Page,
@@ -9,100 +10,111 @@ import {
   Font,
 } from "@react-pdf/renderer";
 import { normalizeOrder } from "./resumeOrder";
+import { DEFAULT_SETTINGS, withSettingsDefaults } from "./resumeSettings";
 
 // Disable hyphenation so long words wrap whole to the next line instead of
 // being broken with a hyphen; justified text then spreads them evenly.
 Font.registerHyphenationCallback((word) => [word]);
 
-/* ── Resume stylesheet (Arial/Helvetica sans-serif, 0.5in margins) ── */
-const styles = StyleSheet.create({
-  page: {
-    padding: 36, // 0.5 inch on all four sides (72pt = 1in)
-    fontFamily: "Helvetica",
-    fontSize: 10,
-    color: "#000000",
-    lineHeight: 1.4,
-  },
+/* ── Resume stylesheet (Arial/Helvetica sans-serif) built from settings ──
+ * Per-element font sizes derive from the base `fontSize` so a single slider
+ * scales the whole document consistently. */
+function makeStyles(s) {
+  const base = s.fontSize;
+  return StyleSheet.create({
+    page: {
+      padding: s.margin,
+      fontFamily: "Helvetica",
+      fontSize: base,
+      color: "#000000",
+      lineHeight: s.lineHeight,
+    },
 
-  /* Header */
-  header: { marginBottom: 6 },
-  name: {
-    fontFamily: "Helvetica-Bold",
-    fontSize: 22,
-    textAlign: "center",
-    letterSpacing: 1,
-    lineHeight: 1.2,
-    marginBottom: 6,
-  },
-  contactLine: {
-    textAlign: "center",
-    fontSize: 9,
-    lineHeight: 1.4,
-    color: "#000000",
-  },
-  link: { color: "#000000", textDecoration: "none" },
-  sep: { color: "#000000" },
+    /* Header */
+    header: { marginBottom: 6 },
+    name: {
+      fontFamily: "Helvetica-Bold",
+      fontSize: s.nameSize,
+      textAlign: "center",
+      letterSpacing: 1,
+      lineHeight: 1.2,
+      marginBottom: 6,
+    },
+    contactLine: {
+      textAlign: "center",
+      fontSize: base - 1,
+      lineHeight: 1.4,
+      color: "#000000",
+    },
+    link: { color: "#000000", textDecoration: "none" },
+    sep: { color: "#000000" },
 
-  /* Section heading with rule */
-  section: { marginTop: 15 },
-  sectionTitle: {
-    fontFamily: "Helvetica-Bold",
-    fontSize: 11,
-    letterSpacing: 0.8,
-    textTransform: "uppercase",
-  },
-  rule: {
-    borderBottomWidth: 0.7,
-    borderBottomColor: "#000000",
-    marginTop: 3,
-    marginBottom: 6,
-  },
+    /* Section heading with rule */
+    section: { marginTop: s.sectionGap },
+    sectionTitle: {
+      fontFamily: "Helvetica-Bold",
+      fontSize: base + 1,
+      letterSpacing: 0.8,
+      textTransform: "uppercase",
+    },
+    rule: {
+      borderBottomWidth: 0.7,
+      borderBottomColor: "#000000",
+      marginTop: 3,
+      marginBottom: 6,
+    },
 
-  summary: { fontSize: 10, textAlign: "justify" },
+    summary: { fontSize: base, textAlign: "justify" },
 
-  /* Entry (experience / education / project) */
-  entry: { marginTop: 8 },
-  entryRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  entryTitle: { fontFamily: "Helvetica-Bold", fontSize: 10.5 },
-  entryRight: { fontSize: 10 },
-  entrySubRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 2,
-  },
-  entrySubLeft: { fontFamily: "Helvetica-Oblique", fontSize: 10 },
-  entrySubRight: { fontFamily: "Helvetica-Oblique", fontSize: 10 },
+    /* Entry (experience / education / project) */
+    entry: { marginTop: s.entryGap },
+    entryRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+    },
+    entryTitle: { fontFamily: "Helvetica-Bold", fontSize: base + 0.5 },
+    entryRight: { fontSize: base },
+    entrySubRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginTop: 2,
+    },
+    entrySubLeft: { fontFamily: "Helvetica-Oblique", fontSize: base },
+    entrySubRight: { fontFamily: "Helvetica-Oblique", fontSize: base },
 
-  /* Bullets */
-  bulletRow: { flexDirection: "row", marginTop: 4, paddingLeft: 8 },
-  bulletDot: { width: 10, fontSize: 10 },
-  bulletText: { flex: 1, fontSize: 10, textAlign: "justify" },
+    /* Bullets */
+    bulletRow: { flexDirection: "row", marginTop: 4, paddingLeft: 8 },
+    bulletDot: { width: 10, fontSize: base },
+    bulletText: { flex: 1, fontSize: base, textAlign: "justify" },
 
-  /* Skills / one-line rows */
-  skillRow: { marginTop: 4, flexDirection: "row" },
-  skillLabel: { fontFamily: "Helvetica-Bold", fontSize: 10 },
-  skillValue: { fontSize: 10, flex: 1 },
+    /* Skills / one-line rows */
+    skillRow: { marginTop: 4, flexDirection: "row" },
+    skillLabel: { fontFamily: "Helvetica-Bold", fontSize: base },
+    skillValue: { fontSize: base, flex: 1 },
 
-  projectTitleRow: { flexDirection: "row" },
-  projectTech: { fontFamily: "Helvetica-Oblique", fontSize: 10 },
+    projectTitleRow: { flexDirection: "row" },
+    projectTech: { fontFamily: "Helvetica-Oblique", fontSize: base },
 
-  /* Custom-field rendering */
-  fieldRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 2,
-  },
-  fieldText: { fontSize: 10 },
-  fieldPara: { fontSize: 10, textAlign: "justify", marginTop: 2 },
-  fBold: { fontFamily: "Helvetica-Bold" },
-  fItalic: { fontFamily: "Helvetica-Oblique" },
-  fNormal: { fontFamily: "Helvetica" },
-});
+    /* Custom-field rendering */
+    fieldRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginTop: 2,
+    },
+    fieldText: { fontSize: base },
+    fieldPara: { fontSize: base, textAlign: "justify", marginTop: 2 },
+    fBold: { fontFamily: "Helvetica-Bold" },
+    fItalic: { fontFamily: "Helvetica-Oblique" },
+    fNormal: { fontFamily: "Helvetica" },
+  });
+}
 
-const emphasisStyle = (f) =>
+/* Styles flow to the nested components (Bullet, SectionHeading, ContactLine)
+ * through context, so the whole tree re-styles when the settings change. */
+const StylesContext = createContext(makeStyles(DEFAULT_SETTINGS));
+const useStyles = () => useContext(StylesContext);
+
+const emphasisStyle = (f, styles) =>
   f.style === "bold"
     ? styles.fBold
     : f.style === "italic"
@@ -125,6 +137,7 @@ const personalShape = PropTypes.shape({
 });
 
 function Bullet({ children }) {
+  const styles = useStyles();
   // wrap={false}: keep the dot and its text together — a bullet moves to the
   // next page as a unit instead of leaving an empty "•" at the page bottom.
   return (
@@ -136,6 +149,7 @@ function Bullet({ children }) {
 }
 
 function SectionHeading({ title }) {
+  const styles = useStyles();
   // minPresenceAhead: if there isn't at least this much room below the heading
   // on the current page, push the whole heading to the next page instead of
   // stranding it above a blank gap (its first entry uses wrap={false}).
@@ -157,6 +171,7 @@ ContactLine.propTypes = { personal: personalShape.isRequired };
  * of forcing the links onto their own line while the first line has space).
  * Order: email → phone → location → linkedin → github → website. */
 function ContactLine({ personal }) {
+  const styles = useStyles();
   const items = [];
   if (isFilled(personal.email))
     items.push({ text: personal.email, href: `mailto:${personal.email}` });
@@ -233,6 +248,15 @@ ResumePDF.propTypes = {
     certifications: PropTypes.array,
     customSections: PropTypes.array,
     disabledSections: PropTypes.array,
+    settings: PropTypes.shape({
+      pageSize: PropTypes.string,
+      margin: PropTypes.number,
+      fontSize: PropTypes.number,
+      lineHeight: PropTypes.number,
+      sectionGap: PropTypes.number,
+      entryGap: PropTypes.number,
+      nameSize: PropTypes.number,
+    }),
   }).isRequired,
 };
 
@@ -250,6 +274,11 @@ export default function ResumePDF({ data }) {
     customSections = [],
     disabledSections = [],
   } = data;
+
+  // Layout settings drive every spacing/font value; fall back to defaults so
+  // resumes saved before this feature still render.
+  const settings = withSettingsDefaults(data.settings);
+  const styles = makeStyles(settings);
 
   // Drop items the user has disabled before building any section.
   const skills = (allSkills || []).filter(enabled);
@@ -387,35 +416,37 @@ export default function ResumePDF({ data }) {
   // Custom sections keyed by their id.
   for (const sec of customSections) {
     if (!sec || !sec.id) continue;
-    nodes[sec.id] = renderCustomSection(sec);
+    nodes[sec.id] = renderCustomSection(sec, styles);
   }
 
   const order = normalizeOrder(data);
   const hidden = new Set(disabledSections);
 
   return (
-    <Document title={personal.name || "Resume"} author={personal.name || ""}>
-      <Page size="A4" style={styles.page}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.name}>{personal.name || "Your Name"}</Text>
-          <ContactLine personal={personal} />
-        </View>
+    <StylesContext.Provider value={styles}>
+      <Document title={personal.name || "Resume"} author={personal.name || ""}>
+        <Page size={settings.pageSize} style={styles.page}>
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={styles.name}>{personal.name || "Your Name"}</Text>
+            <ContactLine personal={personal} />
+          </View>
 
-        {order.map((key) =>
-          !hidden.has(key) && nodes[key] ? (
-            <View key={key}>{nodes[key]}</View>
-          ) : null
-        )}
-      </Page>
-    </Document>
+          {order.map((key) =>
+            !hidden.has(key) && nodes[key] ? (
+              <View key={key}>{nodes[key]}</View>
+            ) : null
+          )}
+        </Page>
+      </Document>
+    </StylesContext.Provider>
   );
 }
 
 /* Render one fully-custom section from its field schema.
  * Left/right single-line text fields pair up into a justified row (like the
  * classic "Company … Dates" line); paragraphs and bullet lists span full width. */
-function renderCustomSection(sec) {
+function renderCustomSection(sec, styles) {
   const fields = sec.fields || [];
   const items = (sec.items || [])
     .filter((it) => !it.disabled)
@@ -427,14 +458,14 @@ function renderCustomSection(sec) {
       <SectionHeading title={sec.title || "Additional"} />
       {items.map((item, idx) => (
         <View key={idx} style={styles.entry} minPresenceAhead={40}>
-          {renderEntryFields(fields, item)}
+          {renderEntryFields(fields, item, styles)}
         </View>
       ))}
     </View>
   );
 }
 
-function renderEntryFields(fields, item) {
+function renderEntryFields(fields, item, styles) {
   const out = [];
   let pending = null; // holds a left text awaiting an optional right partner
 
@@ -454,12 +485,12 @@ function renderEntryFields(fields, item) {
   fields.forEach((f) => {
     const raw = item[f.id];
     if (!isFilled(raw)) return;
-    const style = [styles.fieldText, emphasisStyle(f)];
+    const style = [styles.fieldText, emphasisStyle(f, styles)];
 
     if (f.type === "textarea") {
       flush();
       out.push(
-        <Text key={`ta-${f.id}`} style={[styles.fieldPara, emphasisStyle(f)]}>
+        <Text key={`ta-${f.id}`} style={[styles.fieldPara, emphasisStyle(f, styles)]}>
           {fieldDisplay(f, raw)}
         </Text>
       );
