@@ -389,14 +389,23 @@ export default function ResumeBuilder() {
         ...s,
         resumes: s.resumes.map((r) =>
           r.id === s.activeId
-            ? { ...clone, id: r.id, label: r.label, createdAt: r.createdAt }
+            ? {
+                ...clone,
+                id: r.id,
+                label: r.label,
+                createdAt: r.createdAt,
+                // A copied resume is a fresh draft — never inherit the source's
+                // "ready" mark; it stays Ongoing until perfected for its company.
+                ready: false,
+              }
             : r
         ),
       };
     });
 
-  const canPrefill =
-    store.resumes.length > 1 && isBlankResume(active);
+  // Copying from another resume is always available (as long as there's another
+  // resume to copy from) — not just while the active one is blank.
+  const canPrefill = store.resumes.length > 1;
 
   /* ── generic updaters ── */
   const setPersonal = (field, value) =>
@@ -701,11 +710,12 @@ export default function ResumeBuilder() {
             </div>
           </div>
 
-          {/* ── Offer to copy from any existing resume ── */}
+          {/* ── Small, always-available control to copy from another resume ── */}
           {canPrefill && (
             <CopyFromPicker
               sources={store.resumes.filter((r) => r.id !== store.activeId)}
               onCopy={copyFromResume}
+              targetBlank={isBlankResume(active)}
             />
           )}
 
@@ -1473,47 +1483,85 @@ ResumeSidebar.propTypes = {
   onRemove: PropTypes.func.isRequired,
 };
 
-/* ── Pick an existing resume to copy into a new, blank one ── */
-function CopyFromPicker({ sources, onCopy }) {
-  const [sourceId, setSourceId] = useState(sources[0] ? sources[0].id : "");
+/* ── Small "Options" menu holding the "copy from another resume" action.
+   A custom menu (not a native <select>) so option text is always readable
+   in dark mode, and the whole thing stays tucked behind one button.       */
+function CopyFromPicker({ sources, onCopy, targetBlank }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
 
-  // Keep the selection valid if the resume list changes underneath.
+  // Close the menu on an outside click or Escape.
   useEffect(() => {
-    if (!sources.some((r) => r.id === sourceId)) {
-      setSourceId(sources[0] ? sources[0].id : "");
-    }
-  }, [sources, sourceId]);
+    if (!open) return;
+    const onDown = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
+    const onKey = (e) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
 
   if (!sources.length) return null;
 
+  const pick = (id) => {
+    setOpen(false);
+    // Copying overwrites current content — guard it only when there's
+    // something to lose. A blank resume copies straight in.
+    if (
+      targetBlank ||
+      window.confirm(
+        "Copy over this resume? Its current content will be replaced (name and status are kept)."
+      )
+    ) {
+      onCopy(id);
+    }
+  };
+
   return (
-    <div className="rb-prefill">
-      <span className="rb-prefill-text">
-        New empty resume. Pick an existing resume to copy everything from, then
-        just tweak it for this company.
-      </span>
-      <div className="rb-prefill-actions">
-        <select
-          className="rb-switcher-select"
-          value={sourceId}
-          onChange={(e) => setSourceId(e.target.value)}
-          aria-label="Resume to copy from"
-        >
-          {sources.map((r) => (
-            <option key={r.id} value={r.id}>
-              {r.ready ? "★ " : ""}
-              {(r.label && r.label.trim()) || "Untitled resume"}
-            </option>
-          ))}
-        </select>
-        <button
-          type="button"
-          className="rb-btn rb-btn-primary rb-prefill-btn"
-          onClick={() => sourceId && onCopy(sourceId)}
-        >
-          Copy into this resume
-        </button>
-      </div>
+    <div className="rb-copyfrom" ref={ref}>
+      <button
+        type="button"
+        className={`rb-copyfrom-toggle ${open ? "rb-copyfrom-toggle-on" : ""}`}
+        onClick={() => setOpen((o) => !o)}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        title="Options"
+      >
+        <span aria-hidden="true">⚙</span> Options
+      </button>
+
+      {open && (
+        <div className="rb-copyfrom-menu" role="menu">
+          <p className="rb-copyfrom-heading">Copy from another resume</p>
+          <ul className="rb-copyfrom-list">
+            {sources.map((r) => (
+              <li key={r.id}>
+                <button
+                  type="button"
+                  role="menuitem"
+                  className="rb-copyfrom-item"
+                  onClick={() => pick(r.id)}
+                >
+                  {r.ready && (
+                    <span className="rb-copyfrom-star" aria-hidden="true">
+                      ★
+                    </span>
+                  )}
+                  <span className="rb-copyfrom-item-label">
+                    {(r.label && r.label.trim()) || "Untitled resume"}
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
@@ -1521,6 +1569,7 @@ function CopyFromPicker({ sources, onCopy }) {
 CopyFromPicker.propTypes = {
   sources: PropTypes.array.isRequired,
   onCopy: PropTypes.func.isRequired,
+  targetBlank: PropTypes.bool,
 };
 
 /* ── Cloud sync status bar ── */

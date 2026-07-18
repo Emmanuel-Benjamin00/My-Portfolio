@@ -407,32 +407,83 @@
   color: #16a34a;
 }
 
-/* ── "Fill from last resume" prompt on a blank resume ── */
-.rb-prefill {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-  padding: 14px 16px;
+/* ── "Options" menu holding the copy-from-another-resume action ── */
+.rb-copyfrom {
+  position: relative;
+  display: inline-block;
   margin-bottom: 16px;
-  border: 1px solid var(--accent);
-  background: var(--accent-soft);
-  border-radius: 12px;
 }
-.rb-prefill-text {
-  font-size: 0.9rem;
+.rb-copyfrom-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
   color: var(--text-muted);
-  flex: 1;
-  min-width: 220px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
 }
-.rb-prefill-actions {
+.rb-copyfrom-toggle:hover,
+.rb-copyfrom-toggle-on {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.rb-copyfrom-menu {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 240px;
+  max-width: 320px;
+  padding: 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  background: var(--surface, #1c1c22);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+.rb-copyfrom-heading {
+  margin: 2px 6px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+.rb-copyfrom-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 260px;
+  overflow-y: auto;
+}
+.rb-copyfrom-item {
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-wrap: wrap;
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 0.85rem;
+  text-align: left;
+  color: inherit;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
 }
-.rb-prefill-btn {
+.rb-copyfrom-item:hover {
+  background: var(--accent-soft, rgba(139, 92, 246, 0.15));
+  color: var(--accent);
+}
+.rb-copyfrom-star {
+  color: #eab308;
+  flex: none;
+}
+.rb-copyfrom-item-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
