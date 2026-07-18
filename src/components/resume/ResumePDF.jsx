@@ -241,6 +241,10 @@ ResumePDF.propTypes = {
   data: PropTypes.shape({
     personal: personalShape.isRequired,
     summary: PropTypes.string,
+    summaries: PropTypes.arrayOf(
+      PropTypes.shape({ id: PropTypes.string, text: PropTypes.string })
+    ),
+    selectedSummary: PropTypes.string,
     skills: PropTypes.array,
     experience: PropTypes.array,
     projects: PropTypes.array,
@@ -262,10 +266,21 @@ ResumePDF.propTypes = {
 
 const enabled = (item) => !item || !item.disabled;
 
+// Resolve the single summary to render: the selected variant from the new
+// `summaries` list, falling back to the first, or the legacy `summary` string.
+function resolveSummary(data) {
+  if (Array.isArray(data.summaries)) {
+    const sel =
+      data.summaries.find((s) => s.id === data.selectedSummary) ||
+      data.summaries[0];
+    return sel ? sel.text : "";
+  }
+  return data.summary || "";
+}
+
 export default function ResumePDF({ data }) {
   const {
     personal,
-    summary,
     skills: allSkills,
     experience: allExperience,
     projects: allProjects,
@@ -279,6 +294,8 @@ export default function ResumePDF({ data }) {
   // resumes saved before this feature still render.
   const settings = withSettingsDefaults(data.settings);
   const styles = makeStyles(settings);
+
+  const summary = resolveSummary(data);
 
   // Drop items the user has disabled before building any section.
   const skills = (allSkills || []).filter(enabled);

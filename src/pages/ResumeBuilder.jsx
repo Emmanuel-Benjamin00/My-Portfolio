@@ -59,11 +59,14 @@ const emptyEducation = () => ({
   dates: "",
 });
 const emptySkill = () => ({ label: "", value: "" });
+const emptySummary = () => ({ id: genSectionId(), text: "" });
 const emptyCert = () => ({ text: "", disabled: false });
 const emptyCustomSection = () => {
   const fields = defaultFields();
   return { id: genSectionId(), title: "", fields, items: [emptyItem(fields)] };
 };
+
+const initialSummary = emptySummary();
 
 const initialData = {
   personal: {
@@ -75,7 +78,9 @@ const initialData = {
     github: "",
     website: "",
   },
-  summary: "",
+  // Multiple summary variants; only `selectedSummary` is rendered into the PDF.
+  summaries: [initialSummary],
+  selectedSummary: initialSummary.id,
   skills: [emptySkill()],
   experience: [emptyExperience()],
   projects: [emptyProject()],
@@ -98,6 +103,23 @@ function hydrate(raw) {
     typeof c === "string" ? { text: c, disabled: false } : c
   );
   if (!Array.isArray(data.disabledSections)) data.disabledSections = [];
+  // summary: old single string → list of selectable variants. Read from `raw`
+  // so the default `summaries` merged in from initialData never masks a legacy
+  // string saved before this feature existed.
+  if (!Array.isArray(raw && raw.summaries)) {
+    const legacy =
+      typeof (raw && raw.summary) === "string"
+        ? raw.summary
+        : typeof data.summary === "string"
+          ? data.summary
+          : "";
+    data.summaries = [{ id: genSectionId(), text: legacy }];
+  }
+  if (!data.summaries.length) data.summaries = [emptySummary()];
+  if (!data.summaries.some((s) => s.id === data.selectedSummary)) {
+    data.selectedSummary = data.summaries[0].id;
+  }
+  delete data.summary;
   // Nested settings need their own merge — the top-level spread is shallow, so
   // a saved resume missing newer keys would otherwise arrive incomplete.
   data.settings = withSettingsDefaults(data.settings);
@@ -241,6 +263,21 @@ export default function ResumeBuilder() {
       const [m] = next.splice(from, 1);
       next.splice(to, 0, m);
       return { ...d, [list]: next };
+    });
+
+  /* ── summary variants ── */
+  const addSummary = () => addItem("summaries", emptySummary);
+
+  const removeSummary = (index) =>
+    setData((d) => {
+      const removed = d.summaries[index];
+      const next = d.summaries.filter((_, i) => i !== index);
+      // If the shown variant was removed, fall back to the first remaining one.
+      const selectedSummary =
+        d.selectedSummary === (removed && removed.id)
+          ? next[0] && next[0].id
+          : d.selectedSummary;
+      return { ...d, summaries: next, selectedSummary };
     });
 
   /* ── custom-section updaters ── */
@@ -452,12 +489,52 @@ export default function ResumeBuilder() {
 
           {/* ── Summary ── */}
           <CollapsibleCard title="Professional Summary">
-            <Textarea
-              value={data.summary}
-              onChange={(v) => setField("summary", v)}
-              placeholder="A short 2–3 sentence overview of who you are and what you do."
-              rows={4}
-            />
+            <p className="rb-notes-hint">
+              Keep several summary variants — e.g. tailored to different roles —
+              and pick the one shown on your resume.
+            </p>
+            {data.summaries.map((s, i) => {
+              const shown = data.selectedSummary === s.id;
+              return (
+                <div
+                  className={`rb-item ${shown ? "" : "rb-item-off"}`}
+                  key={s.id}
+                >
+                  <div className="rb-item-head">
+                    <label className="rb-summary-pick">
+                      <input
+                        type="radio"
+                        name="rb-selected-summary"
+                        checked={shown}
+                        onChange={() => setField("selectedSummary", s.id)}
+                      />
+                      <span>
+                        {shown ? "Shown on resume" : "Use this one"}
+                      </span>
+                    </label>
+                    <div className="rb-item-actions">
+                      <MoveButtons
+                        onUp={() => moveListItem("summaries", i, i - 1)}
+                        onDown={() => moveListItem("summaries", i, i + 1)}
+                        disableUp={i === 0}
+                        disableDown={i === data.summaries.length - 1}
+                      />
+                      <RemoveBtn
+                        onClick={() => removeSummary(i)}
+                        disabled={data.summaries.length === 1}
+                      />
+                    </div>
+                  </div>
+                  <Textarea
+                    value={s.text}
+                    onChange={(v) => setListItem("summaries", i, "text", v)}
+                    placeholder="A short 2–3 sentence overview of who you are and what you do."
+                    rows={4}
+                  />
+                </div>
+              );
+            })}
+            <AddBtn label="Add summary variant" onClick={addSummary} />
           </CollapsibleCard>
 
           {/* ── Skills ── */}
