@@ -278,9 +278,23 @@ function resolveSummary(data) {
   return data.summary || "";
 }
 
-export default function ResumePDF({ data }) {
+// Accept either a single resume or a multi-resume store (e.g. the admin view
+// hands us the raw cloud document). When given a store, render the active one.
+function activeResume(input) {
+  if (input && Array.isArray(input.resumes)) {
+    return (
+      input.resumes.find((r) => r.id === input.activeId) ||
+      input.resumes[0] ||
+      {}
+    );
+  }
+  return input || {};
+}
+
+export default function ResumePDF({ data: rawData }) {
+  const data = activeResume(rawData);
   const {
-    personal,
+    personal = {},
     skills: allSkills,
     experience: allExperience,
     projects: allProjects,

@@ -60,6 +60,12 @@ const emptyEducation = () => ({
 });
 const emptySkill = () => ({ label: "", value: "" });
 const emptySummary = () => ({ id: genSectionId(), text: "" });
+const genResumeId = () =>
+  `rz_${
+    typeof crypto !== "undefined" && crypto.randomUUID
+      ? crypto.randomUUID()
+      : Math.random().toString(36).slice(2)
+  }`;
 const emptyCert = () => ({ text: "", disabled: false });
 const emptyCustomSection = () => {
   const fields = defaultFields();
@@ -126,20 +132,115 @@ function hydrate(raw) {
   return data;
 }
 
-function loadInitial() {
+/* ── Multi-resume store ──────────────────────────────────────────────
+   Each company gets its own resume "document". The store holds them all
+   plus which one is active; `createdAt` lets a fresh resume pre-fill from
+   the most recently created one. Older saves were a single resume object,
+   which we transparently wrap into a one-entry store.                    */
+
+// A resume = the normalized field set + an id, a label (company), and a
+// creation timestamp. Existing id/label/createdAt on `fields` win so saved
+// resumes keep their identity across reloads.
+function makeResume(fields, label = "", createdAt) {
+  return {
+    ...fields,
+    id: fields.id || genResumeId(),
+    label: fields.label || label || "",
+    createdAt: fields.createdAt || createdAt || Date.now(),
+  };
+}
+
+// A brand-new, empty resume for another company.
+function blankResume(label = "") {
+  return makeResume(hydrate({}), label);
+}
+
+function emptyStore() {
+  const one = blankResume("");
+  return { resumes: [one], activeId: one.id };
+}
+
+// Is this resume still essentially empty? Drives the "Fill from last resume"
+// offer — we only show it when there's nothing to overwrite.
+function isBlankResume(r) {
+  if (!r) return false;
+  const p = r.personal || {};
+  if (Object.values(p).some((v) => v && String(v).trim())) return false;
+  if ((r.summaries || []).some((s) => s.text && s.text.trim())) return false;
+  if (
+    (r.skills || []).some(
+      (s) => (s.value && s.value.trim()) || (s.label && s.label.trim())
+    )
+  )
+    return false;
+  if (
+    (r.experience || []).some(
+      (e) => e.company || e.role || e.bullets || e.location || e.dates
+    )
+  )
+    return false;
+  if ((r.projects || []).some((x) => x.name || x.tech || x.bullets)) return false;
+  if (
+    (r.education || []).some((e) => e.school || e.degree || e.location || e.dates)
+  )
+    return false;
+  if ((r.certifications || []).some((c) => c.text && c.text.trim())) return false;
+  if ((r.customSections || []).length) return false;
+  if (r.notes && r.notes.trim()) return false;
+  return true;
+}
+
+function hydrateStore(raw) {
+  if (raw && Array.isArray(raw.resumes)) {
+    // Sequential fallback stamps keep migrated resumes in their saved order.
+    const resumes = raw.resumes.map((r, i) =>
+      makeResume(hydrate(r), r && r.label, i + 1)
+    );
+    if (!resumes.length) return emptyStore();
+    const activeId = resumes.some((r) => r.id === raw.activeId)
+      ? raw.activeId
+      : resumes[0].id;
+    return { resumes, activeId };
+  }
+  // Legacy single-resume document (or nothing saved yet).
+  const one = makeResume(hydrate(raw || {}), "", 1);
+  return { resumes: [one], activeId: one.id };
+}
+
+function loadInitialStore() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) return hydrate(JSON.parse(saved));
+    if (saved) return hydrateStore(JSON.parse(saved));
   } catch {
     /* ignore corrupt storage */
   }
-  return initialData;
+  return emptyStore();
 }
 
 export default function ResumeBuilder() {
-  const [data, setData] = useState(loadInitial);
+  const [store, setStore] = useState(loadInitialStore);
   const [showPreview, setShowPreview] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [view, setView] = useState("builder"); // "builder" | "admin"
+
+  // The resume currently being edited. Everything below operates on it, so the
+  // rest of the form is unchanged: `data` is the active resume, and `setData`
+  // maps the update onto it inside the store.
+  const active =
+    store.resumes.find((r) => r.id === store.activeId) || store.resumes[0];
+  const data = active;
+
+  const setData = (updater) =>
+    setStore((s) => ({
+      ...s,
+      resumes: s.resumes.map((r) =>
+        r.id === s.activeId
+          ? typeof updater === "function"
+            ? updater(r)
+            : updater
+          : r
+      ),
+    }));
 
   /* ── Cloud sync state ── */
   const [user, setUser] = useState(null);
@@ -165,8 +266,8 @@ export default function ResumeBuilder() {
         try {
           const cloud = await loadResume(u.uid);
           if (cloud) {
-            setData(hydrate(cloud));
-            toast.info("Loaded your saved resume from the cloud.");
+            setStore(hydrateStore(cloud));
+            toast.info("Loaded your saved resumes from the cloud.");
           }
           setSyncState("saved");
         } catch (err) {
@@ -182,14 +283,25 @@ export default function ResumeBuilder() {
     return unsub;
   }, []);
 
-  // Auto-save to the cloud (debounced) whenever data changes while signed in.
+  // Mirror the whole store to localStorage on every change so switching,
+  // adding and deleting resumes survive a reload even when signed out.
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
+    } catch {
+      /* ignore quota/serialization errors */
+    }
+  }, [store]);
+
+  // Auto-save to the cloud (debounced) whenever any resume changes while signed
+  // in. The entire store (all companies) is saved as the user's document.
   useEffect(() => {
     if (!cloudEnabled || !user || !hydrated.current) return;
     setSyncState("saving");
     clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(async () => {
       try {
-        await saveResume(user, data);
+        await saveResume(user, store);
         setSyncState("saved");
       } catch (err) {
         console.error(err);
@@ -197,7 +309,7 @@ export default function ResumeBuilder() {
       }
     }, 900);
     return () => clearTimeout(saveTimer.current);
-  }, [data, user]);
+  }, [store, user]);
 
   const handleSignIn = async () => {
     try {
@@ -212,6 +324,51 @@ export default function ResumeBuilder() {
     await signOut();
     toast.info("Signed out. Edits now save on this device only.");
   };
+
+  /* ── Multiple resumes (one per company) ── */
+  const addResume = () =>
+    setStore((s) => {
+      const r = blankResume("");
+      return { ...s, resumes: [...s.resumes, r], activeId: r.id };
+    });
+
+  const switchResume = (id) =>
+    setStore((s) => ({ ...s, activeId: id }));
+
+  const setResumeLabel = (id, label) =>
+    setStore((s) => ({
+      ...s,
+      resumes: s.resumes.map((r) => (r.id === id ? { ...r, label } : r)),
+    }));
+
+  // Confirmation is handled by the switcher's two-step UI, so this just applies.
+  const removeResume = (id) =>
+    setStore((s) => {
+      if (s.resumes.length === 1) return s; // always keep at least one
+      const resumes = s.resumes.filter((r) => r.id !== id);
+      const activeId = s.activeId === id ? resumes[0].id : s.activeId;
+      return { ...s, resumes, activeId };
+    });
+
+  // Copy every field from a chosen OTHER resume into the active (blank) one,
+  // keeping the active resume's own identity (id/name/created time).
+  const copyFromResume = (sourceId) =>
+    setStore((s) => {
+      const source = s.resumes.find((r) => r.id === sourceId);
+      if (!source || sourceId === s.activeId) return s;
+      const clone = JSON.parse(JSON.stringify(source));
+      return {
+        ...s,
+        resumes: s.resumes.map((r) =>
+          r.id === s.activeId
+            ? { ...clone, id: r.id, label: r.label, createdAt: r.createdAt }
+            : r
+        ),
+      };
+    });
+
+  const canPrefill =
+    store.resumes.length > 1 && isBlankResume(active);
 
   /* ── generic updaters ── */
   const setPersonal = (field, value) =>
@@ -332,13 +489,17 @@ export default function ResumeBuilder() {
 
   const persist = () => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
     } catch {
       /* ignore */
     }
   };
 
   const handleGenerate = async () => {
+    if (!(data.label || "").trim()) {
+      toast.warn("Give this resume a name (e.g. the company) before generating.");
+      return;
+    }
     if (!data.personal.name.trim()) {
       toast.warn("Add your name before generating the PDF.");
       return;
@@ -375,9 +536,18 @@ export default function ResumeBuilder() {
   };
 
   const handleReset = () => {
-    if (window.confirm("Clear all fields? This cannot be undone.")) {
-      setData(initialData);
-      localStorage.removeItem(STORAGE_KEY);
+    if (
+      window.confirm(
+        "Clear all fields in this resume? This cannot be undone. Your other resumes are kept."
+      )
+    ) {
+      // Reset only the active resume; keep its identity and place in the store.
+      setData((r) => ({
+        ...blankResume(r.label),
+        id: r.id,
+        label: r.label,
+        createdAt: r.createdAt,
+      }));
     }
   };
 
@@ -399,30 +569,92 @@ export default function ResumeBuilder() {
           onSignOut={handleSignOut}
         />
 
-        <div className="rb-actions">
-          <button
-            className="rb-btn rb-btn-primary"
-            onClick={handleGenerate}
-            disabled={generating}
-          >
-            {generating ? "Generating…" : "Generate PDF"}
-          </button>
-          <button
-            className="rb-btn rb-btn-ghost"
-            onClick={() => setShowPreview((s) => !s)}
-          >
-            {showPreview ? "Hide Preview" : "Live Preview"}
-          </button>
-          <button className="rb-btn rb-btn-ghost" onClick={handleReset}>
-            Reset
-          </button>
-        </div>
+        {/* ── Builder / Admin tabs (admins only) ── */}
+        {isAdmin(user) && (
+          <div className="rb-viewtabs" role="tablist">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={view === "builder"}
+              className={`rb-viewtab ${view === "builder" ? "rb-viewtab-active" : ""}`}
+              onClick={() => setView("builder")}
+            >
+              Resume Builder
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={view === "admin"}
+              className={`rb-viewtab ${view === "admin" ? "rb-viewtab-active" : ""}`}
+              onClick={() => setView("admin")}
+            >
+              Admin
+            </button>
+          </div>
+        )}
+
+        {view === "builder" && (
+          <div className="rb-actions">
+            <button
+              className="rb-btn rb-btn-primary"
+              onClick={handleGenerate}
+              disabled={generating}
+            >
+              {generating ? "Generating…" : "Generate PDF"}
+            </button>
+            <button
+              className="rb-btn rb-btn-ghost"
+              onClick={() => setShowPreview((s) => !s)}
+            >
+              {showPreview ? "Hide Preview" : "Live Preview"}
+            </button>
+            <button className="rb-btn rb-btn-ghost" onClick={handleReset}>
+              Reset
+            </button>
+          </div>
+        )}
       </header>
 
-      {isAdmin(user) && <AdminPanel />}
+      {view === "admin" && isAdmin(user) ? (
+        <AdminPanel />
+      ) : (
+        <>
+          {/* ── One resume per company; switch, add or delete ── */}
+          <ResumeSwitcher
+            resumes={store.resumes}
+            activeId={store.activeId}
+            onSwitch={switchResume}
+            onAdd={addResume}
+            onRemove={removeResume}
+          />
 
-      <div className={`rb-layout ${showPreview ? "rb-layout-split" : ""}`}>
-        <form className="rb-form" onBlur={persist} onSubmit={(e) => e.preventDefault()}>
+          <div className={`rb-layout ${showPreview ? "rb-layout-split" : ""}`}>
+            <form className="rb-form" onBlur={persist} onSubmit={(e) => e.preventDefault()}>
+          {/* ── This resume's name (company / target role) — required ── */}
+          <div className="rb-card rb-resume-meta">
+            <Input
+              label="Resume name / Company"
+              value={data.label || ""}
+              onChange={(v) => setResumeLabel(store.activeId, v)}
+              placeholder="e.g. Google — Frontend Engineer"
+              required
+            />
+            {!(data.label || "").trim() && (
+              <p className="rb-req-hint">
+                A name is required — it labels this resume in the switcher and
+                can’t be blank when you generate the PDF.
+              </p>
+            )}
+          </div>
+
+          {/* ── Offer to copy from any existing resume ── */}
+          {canPrefill && (
+            <CopyFromPicker
+              sources={store.resumes.filter((r) => r.id !== store.activeId)}
+              onCopy={copyFromResume}
+            />
+          )}
+
           {/* ── Arrange sections ── */}
           <SectionArranger
             order={normalizeOrder(data)}
@@ -836,14 +1068,16 @@ export default function ResumeBuilder() {
           </CollapsibleCard>
         </form>
 
-        {showPreview && (
-          <div className="rb-preview">
-            <PDFViewer className="rb-pdf-viewer" showToolbar={false}>
-              <ResumePDF data={data} />
-            </PDFViewer>
+            {showPreview && (
+              <div className="rb-preview">
+                <PDFViewer className="rb-pdf-viewer" showToolbar={false}>
+                  <ResumePDF data={data} />
+                </PDFViewer>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 }
@@ -959,6 +1193,140 @@ Range.propTypes = {
   step: PropTypes.number.isRequired,
   unit: PropTypes.string,
   onChange: PropTypes.func.isRequired,
+};
+
+/* ── Resume switcher: pick the resume to edit from a dropdown ── */
+function ResumeSwitcher({ resumes, activeId, onSwitch, onAdd, onRemove }) {
+  const [confirming, setConfirming] = useState(false);
+  const active = resumes.find((r) => r.id === activeId) || resumes[0];
+  const activeName = (active && active.label && active.label.trim()) ||
+    "Untitled resume";
+
+  // Drop the delete prompt whenever the selected resume changes.
+  useEffect(() => setConfirming(false), [activeId]);
+
+  return (
+    <div className="rb-switcher">
+      <div className="rb-switcher-row">
+        <label className="rb-switcher-field">
+          <span className="rb-switcher-label">Editing resume</span>
+          <select
+            className="rb-switcher-select"
+            value={activeId}
+            onChange={(e) => onSwitch(e.target.value)}
+          >
+            {resumes.map((r) => (
+              <option key={r.id} value={r.id}>
+                {(r.label && r.label.trim()) || "Untitled resume"}
+              </option>
+            ))}
+          </select>
+        </label>
+        <button
+          type="button"
+          className="rb-tab-add"
+          onClick={onAdd}
+          title="Create a new resume for another company"
+        >
+          <span aria-hidden="true">＋</span> New resume
+        </button>
+        {resumes.length > 1 && !confirming && (
+          <button
+            type="button"
+            className="rb-switcher-del"
+            onClick={() => setConfirming(true)}
+          >
+            Delete…
+          </button>
+        )}
+      </div>
+
+      {/* Deliberate two-step delete so it can't be hit by accident. */}
+      {confirming && (
+        <div className="rb-switcher-confirm">
+          <span className="rb-switcher-confirm-text">
+            Delete “{activeName}” permanently? This can’t be undone.
+          </span>
+          <div className="rb-switcher-confirm-actions">
+            <button
+              type="button"
+              className="rb-btn rb-btn-ghost"
+              onClick={() => setConfirming(false)}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              className="rb-switcher-del-confirm"
+              onClick={() => {
+                onRemove(activeId);
+                setConfirming(false);
+              }}
+            >
+              Delete permanently
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+ResumeSwitcher.propTypes = {
+  resumes: PropTypes.array.isRequired,
+  activeId: PropTypes.string,
+  onSwitch: PropTypes.func.isRequired,
+  onAdd: PropTypes.func.isRequired,
+  onRemove: PropTypes.func.isRequired,
+};
+
+/* ── Pick an existing resume to copy into a new, blank one ── */
+function CopyFromPicker({ sources, onCopy }) {
+  const [sourceId, setSourceId] = useState(sources[0] ? sources[0].id : "");
+
+  // Keep the selection valid if the resume list changes underneath.
+  useEffect(() => {
+    if (!sources.some((r) => r.id === sourceId)) {
+      setSourceId(sources[0] ? sources[0].id : "");
+    }
+  }, [sources, sourceId]);
+
+  if (!sources.length) return null;
+
+  return (
+    <div className="rb-prefill">
+      <span className="rb-prefill-text">
+        New empty resume. Pick an existing resume to copy everything from, then
+        just tweak it for this company.
+      </span>
+      <div className="rb-prefill-actions">
+        <select
+          className="rb-switcher-select"
+          value={sourceId}
+          onChange={(e) => setSourceId(e.target.value)}
+          aria-label="Resume to copy from"
+        >
+          {sources.map((r) => (
+            <option key={r.id} value={r.id}>
+              {(r.label && r.label.trim()) || "Untitled resume"}
+            </option>
+          ))}
+        </select>
+        <button
+          type="button"
+          className="rb-btn rb-btn-primary rb-prefill-btn"
+          onClick={() => sourceId && onCopy(sourceId)}
+        >
+          Copy into this resume
+        </button>
+      </div>
+    </div>
+  );
+}
+
+CopyFromPicker.propTypes = {
+  sources: PropTypes.array.isRequired,
+  onCopy: PropTypes.func.isRequired,
 };
 
 /* ── Cloud sync status bar ── */

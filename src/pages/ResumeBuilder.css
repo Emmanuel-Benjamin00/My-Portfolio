@@ -29,6 +29,177 @@
   flex-wrap: wrap;
 }
 
+/* ── Builder / Admin view tabs ── */
+.rb-viewtabs {
+  display: inline-flex;
+  gap: 4px;
+  margin: 0 auto 18px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-elev);
+}
+.rb-viewtab {
+  border: none;
+  background: transparent;
+  border-radius: 7px;
+  padding: 8px 18px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.rb-viewtab-active {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ── Resume switcher (one document per company) ── */
+.rb-switcher {
+  max-width: 900px;
+  margin: 0 auto 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.rb-switcher-row {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.rb-switcher-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 200px;
+}
+.rb-switcher-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.rb-switcher-select {
+  padding: 9px 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  cursor: pointer;
+}
+.rb-switcher-select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.rb-tab-add {
+  border: 1px dashed var(--border-strong);
+  background: transparent;
+  border-radius: 8px;
+  padding: 9px 14px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--accent);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.rb-tab-add:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.rb-switcher-del {
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  border-radius: 8px;
+  padding: 9px 14px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.rb-switcher-del:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+.rb-switcher-confirm {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px solid #ef4444;
+  border-radius: 10px;
+  background: rgba(239, 68, 68, 0.08);
+}
+.rb-switcher-confirm-text {
+  font-size: 0.88rem;
+  color: var(--text);
+  flex: 1;
+  min-width: 200px;
+}
+.rb-switcher-confirm-actions {
+  display: flex;
+  gap: 8px;
+}
+.rb-switcher-del-confirm {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: #fff;
+  background: #ef4444;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.rb-switcher-del-confirm:hover {
+  background: #dc2626;
+}
+
+/* ── This resume's name field ── */
+.rb-resume-meta {
+  margin-bottom: 16px;
+}
+.rb-req-hint {
+  margin: 6px 0 0;
+  font-size: 0.8rem;
+  color: #ef4444;
+}
+
+/* ── "Fill from last resume" prompt on a blank resume ── */
+.rb-prefill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  border: 1px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: 12px;
+}
+.rb-prefill-text {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  flex: 1;
+  min-width: 220px;
+}
+.rb-prefill-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.rb-prefill-btn {
+  white-space: nowrap;
+}
+
 /* ── Cloud sync bar ── */
 .rb-sync {
   display: flex;
